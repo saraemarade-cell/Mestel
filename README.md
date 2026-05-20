@@ -1,4 +1,19 @@
 README – Novalink Instructions Page
+
+## Video
+
+- [Video sezione 1](https://drive.google.com/file/d/1Ekz6LszgXaPPZ-aRr-xq6HHtLKIY017i/view?usp=sharing)
+- [Video sezione 2](https://drive.google.com/file/d/1zP3navCtQlZqbRfj7pTQBQ8EUcyNsDta/view?usp=sharing)
+- [Video sezione 3+4](https://drive.google.com/file/d/1hmlzP4CaayJhrH9NSmN9ca55P6uJ6qsr/view?usp=sharing)
+- [Video sezione 5](https://drive.google.com/file/d/1e5nqzcwlJrwt9R_fThxDVRXsHuwEkwIl/view?usp=sharing)
+- [Video sezione 6](https://drive.google.com/file/d/1Am2b_fGGll6R-z6rHBfrIs7iJWoBprjM/view?usp=sharing)
+- [Video sezione 7](https://drive.google.com/file/d/18k6U2yhnQss0ARw3wUcajs0dXiSVq8_R/view?usp=sharing)
+- [Video sezione 8+9](https://drive.google.com/file/d/1i4FX3mq2By05tsrPlAnfgjovOqSX7uwi/view?usp=sharing)
+- [Video sezione 10](https://drive.google.com/file/d/1xGWVoXEvo-7B6iFRjJVv1KIb3dqYSM69/view?usp=sharing)
+- [Video sezione 11](https://drive.google.com/file/d/1HuL7AlW7n4mi-PjOwWONVoBfPKuGNIDS/view?usp=sharing)
+
+---
+
 Project Overview
 
 Create a standalone instruction page for the Novalink product by Mestel.
@@ -162,7 +177,7 @@ Large, bold, premium typography.
 
 Example:
 
-Scarica l’app Fidesmo
+Scarica l'app Fidesmo
 4. Description
 
 Short and direct.
@@ -307,9 +322,9 @@ optimized video loading
 lazy-loaded media
 performant scrolling
 Instruction Steps Content
-Step 1 – Scarica l’app Fidesmo
+Step 1 – Scarica l'app Fidesmo
 
-Scarica l’app Fidesmo da App Store o Google Play.
+Scarica l'app Fidesmo da App Store o Google Play.
 
 Step 2 – Associa il bracciale Novalink
 
@@ -318,19 +333,19 @@ Potrebbero essere necessari alcuni passaggi.
 
 Step 3 – Completa la configurazione
 
-Segui tutte le istruzioni nell’app fino alla conferma finale.
+Segui tutte le istruzioni nell'app fino alla conferma finale.
 
 Step 4 – Aggiungi la tua carta
 
-Inserisci i dati della tua carta per completare l’attivazione.
+Inserisci i dati della tua carta per completare l'attivazione.
 
 Step 5 – Carta non riconosciuta?
 
 Alcune carte richiedono un wallet compatibile, come Curve.
 
-Step 6 – Scarica l’app Curve
+Step 6 – Scarica l'app Curve
 
-Scarica l’app Curve da App Store o Google Play e installala sul tuo dispositivo.
+Scarica l'app Curve da App Store o Google Play e installala sul tuo dispositivo.
 
 Step 7 – Collega la tua carta
 
@@ -342,7 +357,7 @@ Dalla schermata principale di Curve, apri la sezione Profilo.
 
 Step 9 – Tieni pronti i dati della carta Curve
 
-Ti serviranno per completare l’attivazione su Fidesmo.
+Ti serviranno per completare l'attivazione su Fidesmo.
 
 Step 10 – Inserisci la carta Curve in Fidesmo
 
