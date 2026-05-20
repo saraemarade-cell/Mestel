@@ -5,15 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Configura il tuo Novalink — Mestel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,200;1,9..40,300&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black: #000000;
+      --black: #03080a;
       --white: #ffffff;
-      --grey: #888888;
-      --light: #f2f2f2;
+      --glow: rgba(255, 255, 255, 0.9);
+      --glow-soft: rgba(200, 235, 255, 0.15);
+      --grey: rgba(255,255,255,0.4);
       --font: 'DM Sans', sans-serif;
     }
 
@@ -21,10 +22,22 @@
 
     body {
       font-family: var(--font);
-      background: var(--white);
-      color: var(--black);
+      background: var(--black);
+      color: var(--white);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
+    }
+
+    /* ── SCROLL PROGRESS BAND ─────────────────── */
+    #progress-band {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: var(--white);
+      box-shadow: 0 0 12px 3px rgba(255,255,255,.7), 0 0 40px 10px rgba(255,255,255,.3);
+      z-index: 100;
+      transition: width .1s linear;
     }
 
     /* ── HERO ─────────────────────────────────── */
@@ -35,151 +48,284 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 48px 24px 64px;
+      padding: 60px 24px;
       text-align: center;
       position: relative;
+      overflow: hidden;
+    }
+
+    /* Glowing band — the bracelet */
+    .hero__band {
+      position: absolute;
+      left: -10%;
+      width: 120%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.05) 10%, rgba(255,255,255,.95) 40%, #ffffff 50%, rgba(255,255,255,.95) 60%, rgba(255,255,255,.05) 90%, transparent 100%);
+      box-shadow:
+        0 0 6px 2px rgba(255,255,255,.7),
+        0 0 30px 8px rgba(255,255,255,.3),
+        0 0 80px 20px rgba(200,235,255,.15),
+        0 0 160px 50px rgba(200,235,255,.07);
+      top: 50%;
+      transform: translateY(80px);
+      opacity: 0;
+      animation: bandReveal 1.8s ease forwards .3s;
+      pointer-events: none;
+    }
+
+    .hero__band-glow {
+      position: absolute;
+      left: 0; right: 0;
+      height: 300px;
+      top: 50%;
+      transform: translateY(calc(80px - 150px));
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(200,235,255,.08) 0%, transparent 100%);
+      opacity: 0;
+      animation: bandReveal 2s ease forwards .5s;
+      pointer-events: none;
+    }
+
+    @keyframes bandReveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .hero__logo {
-      width: clamp(140px, 40vw, 220px);
-      margin-bottom: 64px;
+      width: clamp(120px, 35vw, 200px);
+      margin-bottom: 56px;
       opacity: 0;
-      transform: translateY(16px);
-      animation: fadeUp .9s ease forwards .2s;
+      animation: fadeUp .8s ease forwards .8s;
     }
 
-    .hero__logo svg { width: 100%; height: auto; }
-    .hero__logo svg .st0 { fill: var(--white); }
-
     .hero__eyebrow {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: .16em;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .22em;
       text-transform: uppercase;
-      color: var(--grey);
-      margin-bottom: 24px;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 20px;
       opacity: 0;
-      animation: fadeUp .9s ease forwards .4s;
+      animation: fadeUp .8s ease forwards 1s;
     }
 
     .hero__title {
-      font-size: clamp(2.4rem, 8vw, 5.5rem);
-      font-weight: 300;
+      font-size: clamp(2.2rem, 7vw, 5rem);
+      font-weight: 200;
       line-height: 1.1;
+      letter-spacing: -.02em;
       color: var(--white);
-      max-width: 780px;
-      margin-bottom: 28px;
+      max-width: 700px;
+      margin-bottom: 20px;
       opacity: 0;
-      animation: fadeUp .9s ease forwards .55s;
+      animation: fadeUp .8s ease forwards 1.1s;
     }
 
-    .hero__title em {
-      font-style: italic;
-      font-weight: 300;
-    }
+    .hero__title em { font-style: italic; }
 
     .hero__sub {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-size: clamp(.9rem, 2vw, 1.05rem);
       font-weight: 300;
       line-height: 1.7;
-      color: rgba(255,255,255,.55);
-      max-width: 520px;
+      color: rgba(255,255,255,.4);
+      max-width: 460px;
       opacity: 0;
-      animation: fadeUp .9s ease forwards .7s;
+      animation: fadeUp .8s ease forwards 1.25s;
     }
 
     .hero__scroll {
       position: absolute;
-      bottom: 36px;
+      bottom: 32px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       opacity: 0;
-      animation: fadeUp .9s ease forwards 1.1s;
-    }
-
-    .hero__scroll span {
-      font-size: 10px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.3);
+      animation: fadeUp .8s ease forwards 1.6s;
     }
 
     .hero__scroll-line {
       width: 1px;
-      height: 40px;
-      background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
-      animation: scrollPulse 2s ease-in-out infinite 1.5s;
+      height: 36px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.5), transparent);
+      animation: pulse 2s ease-in-out infinite 2s;
+    }
+
+    .hero__scroll span {
+      font-size: 9px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.25);
+    }
+
+    /* ── GLOW DIVIDER ─────────────────────────── */
+    .glow-divider {
+      width: 100%;
+      height: 1px;
+      position: relative;
+      overflow: visible;
+    }
+
+    .glow-divider::after {
+      content: '';
+      position: absolute;
+      left: 5%;
+      width: 90%;
+      top: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.15) 20%, rgba(255,255,255,.5) 50%, rgba(255,255,255,.15) 80%, transparent);
+      box-shadow: 0 0 12px 2px rgba(255,255,255,.2), 0 0 40px 8px rgba(255,255,255,.06);
     }
 
     /* ── INTRO ────────────────────────────────── */
     .intro {
-      padding: clamp(80px, 12vw, 140px) 24px;
-      max-width: 900px;
+      padding: 72px 24px 56px;
+      max-width: 960px;
       margin: 0 auto;
+    }
+
+    .intro__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    @media (min-width: 680px) {
+      .intro__grid { grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
     }
 
     .intro__label {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: .16em;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .2em;
       text-transform: uppercase;
-      color: var(--grey);
-      margin-bottom: 32px;
+      color: rgba(255,255,255,.3);
+      margin-bottom: 20px;
     }
 
-    .intro__text {
-      font-size: clamp(1.5rem, 4vw, 2.6rem);
+    .intro__title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 200;
+      line-height: 1.3;
+      letter-spacing: -.02em;
+    }
+
+    .intro__body {
+      font-size: .95rem;
       font-weight: 300;
-      line-height: 1.45;
-      color: var(--black);
+      line-height: 1.8;
+      color: rgba(255,255,255,.5);
+      padding-top: 8px;
     }
 
-    .intro__text strong {
-      font-weight: 500;
+    .intro__body strong { color: rgba(255,255,255,.85); font-weight: 400; }
+
+    .intro__pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
     }
 
-    .intro__divider {
-      width: 40px;
+    .intro__pill {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: .08em;
+      padding: 8px 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 100px;
+      color: rgba(255,255,255,.5);
+      background: rgba(255,255,255,.04);
+    }
+
+    /* ── STEPS WRAPPER ────────────────────────── */
+    .steps-label {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .steps-label span {
+      font-size: 10px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.25);
+      white-space: nowrap;
+    }
+
+    .steps-label-line {
+      flex: 1;
       height: 1px;
-      background: var(--black);
-      margin-top: 48px;
+      background: rgba(255,255,255,.08);
     }
 
-    /* ── STEPS ────────────────────────────────── */
-    .steps { padding-bottom: clamp(80px, 12vw, 140px); }
-
+    /* ── STEP ─────────────────────────────────── */
     .step {
-      padding: clamp(60px, 10vw, 120px) 0;
-      border-top: 1px solid rgba(0,0,0,.08);
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 56px;
       opacity: 0;
-      transform: translateY(40px);
-      transition: opacity .8s ease, transform .8s ease;
+      transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
     }
 
-    .step.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .step.visible { opacity: 1; transform: none; }
 
     .step__inner {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 0 24px;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(255,255,255,.02);
+      position: relative;
+      transition: border-color .4s ease, box-shadow .4s ease;
     }
 
-    /* Video block */
+    .step__inner:hover {
+      border-color: rgba(255,255,255,.15);
+      box-shadow: 0 0 40px rgba(255,255,255,.04), inset 0 0 40px rgba(255,255,255,.02);
+    }
+
+    /* Glow accent on left edge */
+    .step__inner::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 20%; bottom: 20%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,.4), transparent);
+      box-shadow: 0 0 8px 2px rgba(255,255,255,.2);
+      opacity: 0;
+      transition: opacity .4s ease;
+    }
+
+    .step__inner:hover::before { opacity: 1; }
+
     .step__video {
       width: 100%;
       aspect-ratio: 9/16;
-      background: #0a0a0a;
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 48px;
+      background: #000;
       position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 600px) {
+      .step__video {
+        aspect-ratio: 9/16;
+        max-height: 70vh;
+        width: auto;
+        margin: 0 auto;
+        display: block;
+      }
     }
 
     .step__video iframe {
@@ -189,441 +335,513 @@
       display: block;
     }
 
-    /* Text block */
+    /* Bottom glow line on video */
+    .step__video::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.4) 50%, transparent);
+      box-shadow: 0 0 10px 2px rgba(255,255,255,.2);
+    }
+
+    .step__text {
+      padding: 28px 28px 32px;
+    }
+
     .step__meta {
       display: flex;
-      align-items: baseline;
-      gap: 20px;
-      margin-bottom: 20px;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
     }
 
     .step__number {
       font-size: 10px;
-      font-weight: 500;
-      letter-spacing: .18em;
+      font-weight: 400;
+      letter-spacing: .2em;
       text-transform: uppercase;
-      color: var(--grey);
+      color: rgba(255,255,255,.3);
       white-space: nowrap;
     }
 
-    .step__line {
+    .step__meta-line {
       flex: 1;
       height: 1px;
-      background: rgba(0,0,0,.12);
+      background: rgba(255,255,255,.08);
     }
 
     .step__title {
-      font-size: clamp(1.8rem, 5vw, 3rem);
-      font-weight: 400;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 300;
       line-height: 1.2;
       letter-spacing: -.02em;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
 
     .step__desc {
-      font-size: clamp(1rem, 2.2vw, 1.15rem);
+      font-size: .92rem;
       font-weight: 300;
       line-height: 1.75;
-      color: #444;
-      max-width: 560px;
+      color: rgba(255,255,255,.45);
     }
 
-    /* Double step variant */
     .step__sub {
-      margin-top: 36px;
-      padding-top: 36px;
-      border-top: 1px solid rgba(0,0,0,.08);
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,.06);
     }
 
-    /* ── DONE SECTION ─────────────────────────── */
+    /* ── DONE ─────────────────────────────────── */
     .done {
-      background: var(--black);
-      padding: clamp(80px, 14vw, 160px) 24px;
+      position: relative;
+      padding: 80px 24px;
       text-align: center;
+      overflow: hidden;
       opacity: 0;
-      transform: translateY(40px);
-      transition: opacity .8s ease, transform .8s ease;
+      transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
     }
 
-    .done.visible { opacity: 1; transform: translateY(0); }
+    .done.visible { opacity: 1; transform: none; }
 
-    .done__icon {
-      width: 56px;
-      height: 56px;
-      border: 1px solid rgba(255,255,255,.25);
+    .done__band {
+      position: absolute;
+      left: -10%; width: 120%;
+      height: 1px;
+      top: 50%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.05) 10%, rgba(255,255,255,.9) 40%, #fff 50%, rgba(255,255,255,.9) 60%, rgba(255,255,255,.05) 90%, transparent 100%);
+      box-shadow: 0 0 8px 3px rgba(255,255,255,.6), 0 0 40px 12px rgba(255,255,255,.25), 0 0 100px 30px rgba(200,235,255,.1);
+      pointer-events: none;
+    }
+
+    .done__band-glow {
+      position: absolute;
+      left: 0; right: 0; top: 50%;
+      transform: translateY(-50%);
+      height: 400px;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(200,235,255,.07) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .done__content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .done__check {
+      width: 48px; height: 48px;
+      border: 1px solid rgba(255,255,255,.2);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 40px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 0 20px rgba(255,255,255,.1);
     }
 
-    .done__icon svg { width: 22px; height: 22px; }
+    .done__check svg { width: 18px; height: 18px; }
 
     .done__label {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: .16em;
+      font-size: 10px;
+      letter-spacing: .2em;
       text-transform: uppercase;
-      color: var(--grey);
-      margin-bottom: 28px;
+      color: rgba(255,255,255,.3);
+      margin-bottom: 16px;
     }
 
     .done__title {
-      font-size: clamp(2.4rem, 8vw, 5rem);
-      font-weight: 300;
-      line-height: 1.1;
-      color: var(--white);
-      margin-bottom: 28px;
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 200;
+      letter-spacing: -.03em;
+      line-height: 1;
+      margin-bottom: 16px;
     }
 
     .done__sub {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-size: 1rem;
       font-weight: 300;
       line-height: 1.7;
-      color: rgba(255,255,255,.45);
-      max-width: 480px;
-      margin: 0 auto 56px;
+      color: rgba(255,255,255,.4);
+      max-width: 400px;
+      margin: 0 auto 40px;
+    }
+
+    .done__logo {
+      width: clamp(90px, 24vw, 140px);
+      margin: 0 auto;
+      opacity: .15;
     }
 
     /* ── PIN TIP ──────────────────────────────── */
     .pin-tip {
-      background: var(--white);
-      padding: clamp(60px, 10vw, 100px) 24px;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
       opacity: 0;
-      transform: translateY(40px);
-      transition: opacity .8s ease, transform .8s ease;
+      transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
     }
 
-    .pin-tip.visible { opacity: 1; transform: translateY(0); }
+    .pin-tip.visible { opacity: 1; transform: none; }
 
     .pin-tip__inner {
-      max-width: 720px;
-      margin: 0 auto;
-      border: 1px solid rgba(0,0,0,.12);
+      border: 1px solid rgba(255,255,255,.08);
       border-radius: 16px;
-      padding: clamp(36px, 6vw, 56px);
+      padding: 28px 28px 32px;
+      background: rgba(255,255,255,.03);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 600px) {
+      .pin-tip__inner { grid-template-columns: auto 1fr; gap: 0 32px; align-items: start; }
     }
 
     .pin-tip__badge {
-      display: inline-block;
       font-size: 10px;
-      font-weight: 500;
+      font-weight: 400;
       letter-spacing: .16em;
       text-transform: uppercase;
-      color: var(--black);
-      border: 1px solid rgba(0,0,0,.2);
-      border-radius: 100px;
-      padding: 6px 14px;
-      margin-bottom: 28px;
+      color: rgba(255,255,255,.3);
+      white-space: nowrap;
+      padding-top: 4px;
     }
 
+    .pin-tip__body {}
+
     .pin-tip__title {
-      font-size: clamp(1.4rem, 3.5vw, 2rem);
+      font-size: 1.1rem;
       font-weight: 400;
-      line-height: 1.3;
-      margin-bottom: 16px;
-      letter-spacing: -.01em;
+      margin-bottom: 8px;
     }
 
     .pin-tip__desc {
-      font-size: 1rem;
+      font-size: .9rem;
       font-weight: 300;
       line-height: 1.75;
-      color: #555;
+      color: rgba(255,255,255,.4);
     }
-
-    /* ── DONE LOGO ────────────────────────────── */
-    .done__logo {
-      width: clamp(100px, 28vw, 160px);
-      margin: 0 auto;
-    }
-
-    .done__logo svg .st0 { fill: rgba(255,255,255,.18); }
 
     /* ── ANIMATIONS ───────────────────────────── */
     @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes scrollPulse {
-      0%, 100% { opacity: .3; }
-      50% { opacity: .8; }
+    @keyframes pulse {
+      0%, 100% { opacity: .4; }
+      50%       { opacity: 1; }
     }
 
-    /* ── TABLET+ ──────────────────────────────── */
-    @media (min-width: 768px) {
-      .step__video {
-        aspect-ratio: 9/16;
-        max-height: 75vh;
-        width: auto;
-        margin-left: auto;
-        margin-right: auto;
-      }
+    /* ── INTERACTIVE GLOW CURSOR ──────────────── */
+    #cursor-glow {
+      position: fixed;
+      pointer-events: none;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.04) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      transition: left .15s ease, top .15s ease;
     }
   </style>
 </head>
 <body>
 
-  <!-- ═══ HERO ═══════════════════════════════════════════════ -->
+  <div id="progress-band"></div>
+  <div id="cursor-glow"></div>
+
+  <!-- ═══ HERO ═════════════════════════════════ -->
   <section class="hero">
+    <div class="hero__band"></div>
+    <div class="hero__band-glow"></div>
 
-    <div class="hero__logo">
-      <svg id="Calque_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 293.97 153.11">
-        <defs><style>.st0{fill:#ffffff}</style></defs>
-        <g>
-          <polygon class="st0" points="154.12 49.59 104.53 0 104.53 79.35 119.41 79.35 119.41 34.71 144.2 59.51 154.12 49.59"/>
-          <polygon class="st0" points="183.88 3.97 183.88 0 149.16 34.72 151.15 36.7 183.88 3.97"/>
-          <polygon class="st0" points="183.88 7.93 153.13 38.68 155.11 40.67 183.88 11.9 183.88 7.93"/>
-          <polygon class="st0" points="183.88 15.87 157.1 42.65 159.08 44.63 169 34.71 169 79.35 171.98 79.35 171.98 31.74 171.98 31.74 174.95 28.76 174.95 79.35 177.93 79.35 177.93 25.79 177.93 25.79 180.9 22.81 180.9 79.35 183.88 79.35 183.88 19.84 183.88 19.84 183.88 19.84 183.88 15.87"/>
-        </g>
-        <g>
-          <path class="st0" d="M44.34,152.42l-.07-32-15.86,26.48h-4l-15.86-26.07v31.59H0v-48.28h7.38l19.17,32,18.83-32h7.38l.07,48.28h-8.48Z"/>
-          <path class="st0" d="M105.53,144.91v7.52h-36.21v-48.28h35.24v7.52h-26.27v12.55h23.31v7.38h-23.31v13.31h27.24Z"/>
-          <path class="st0" d="M114.92,147.32l3.1-6.97c3.86,3.11,10,5.31,15.93,5.31,7.52,0,10.69-2.69,10.69-6.28,0-10.41-28.69-3.59-28.69-21.52,0-7.79,6.21-14.41,19.45-14.41,5.79,0,11.86,1.52,16.07,4.27l-2.83,6.97c-4.34-2.55-9.1-3.79-13.31-3.79-7.45,0-10.48,2.9-10.48,6.55,0,10.28,28.62,3.59,28.62,21.31,0,7.72-6.28,14.34-19.52,14.34-7.52,0-15.03-2.34-19.03-5.79Z"/>
-          <path class="st0" d="M174.92,111.73h-16v-7.59h40.97v7.59h-16v40.69h-8.97v-40.69Z"/>
-          <path class="st0" d="M246.31,144.91v7.52h-36.21v-48.28h35.24v7.52h-26.28v12.55h23.31v7.38h-23.31v13.31h27.24Z"/>
-          <path class="st0" d="M259.77,104.15h8.96v40.69h25.24v7.59h-34.21v-48.28Z"/>
-        </g>
-      </svg>
+    <div class="hero__content">
+      <div class="hero__logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 293.97 153.11">
+          <g>
+            <polygon fill="#fff" points="154.12 49.59 104.53 0 104.53 79.35 119.41 79.35 119.41 34.71 144.2 59.51 154.12 49.59"/>
+            <polygon fill="#fff" points="183.88 3.97 183.88 0 149.16 34.72 151.15 36.7 183.88 3.97"/>
+            <polygon fill="#fff" points="183.88 7.93 153.13 38.68 155.11 40.67 183.88 11.9 183.88 7.93"/>
+            <polygon fill="#fff" points="183.88 15.87 157.1 42.65 159.08 44.63 169 34.71 169 79.35 171.98 79.35 171.98 31.74 174.95 28.76 174.95 79.35 177.93 79.35 177.93 25.79 180.9 22.81 180.9 79.35 183.88 79.35 183.88 19.84 183.88 15.87"/>
+          </g>
+          <g>
+            <path fill="#fff" d="M44.34,152.42l-.07-32-15.86,26.48h-4l-15.86-26.07v31.59H0v-48.28h7.38l19.17,32,18.83-32h7.38l.07,48.28h-8.48Z"/>
+            <path fill="#fff" d="M105.53,144.91v7.52h-36.21v-48.28h35.24v7.52h-26.27v12.55h23.31v7.38h-23.31v13.31h27.24Z"/>
+            <path fill="#fff" d="M114.92,147.32l3.1-6.97c3.86,3.11,10,5.31,15.93,5.31,7.52,0,10.69-2.69,10.69-6.28,0-10.41-28.69-3.59-28.69-21.52,0-7.79,6.21-14.41,19.45-14.41,5.79,0,11.86,1.52,16.07,4.27l-2.83,6.97c-4.34-2.55-9.1-3.79-13.31-3.79-7.45,0-10.48,2.9-10.48,6.55,0,10.28,28.62,3.59,28.62,21.31,0,7.72-6.28,14.34-19.52,14.34-7.52,0-15.03-2.34-19.03-5.79Z"/>
+            <path fill="#fff" d="M174.92,111.73h-16v-7.59h40.97v7.59h-16v40.69h-8.97v-40.69Z"/>
+            <path fill="#fff" d="M246.31,144.91v7.52h-36.21v-48.28h35.24v7.52h-26.28v12.55h23.31v7.38h-23.31v13.31h27.24Z"/>
+            <path fill="#fff" d="M259.77,104.15h8.96v40.69h25.24v7.59h-34.21v-48.28Z"/>
+          </g>
+        </svg>
+      </div>
+
+      <p class="hero__eyebrow">Novalink — Guida all'attivazione</p>
+      <h1 class="hero__title">Come configurare<br><em>il tuo Novalink</em></h1>
+      <p class="hero__sub">Segui questi semplici passaggi per attivare il tuo bracciale e iniziare a pagare contactless.</p>
     </div>
-
-    <p class="hero__eyebrow">Novalink — Guida all'attivazione</p>
-
-    <h1 class="hero__title">
-      Come configurare<br><em>il tuo Novalink</em>
-    </h1>
-
-    <p class="hero__sub">
-      Segui questi semplici passaggi per attivare il tuo bracciale e iniziare a pagare contactless.
-    </p>
 
     <div class="hero__scroll">
       <div class="hero__scroll-line"></div>
       <span>Scorri</span>
     </div>
-
   </section>
 
-  <!-- ═══ INTRO ════════════════════════════════════════════════ -->
+  <!-- ═══ INTRO ════════════════════════════════ -->
+  <div class="glow-divider"></div>
+
   <section class="intro">
-    <p class="intro__label">Cos'è Novalink</p>
-    <p class="intro__text">
-      <strong>Novalink</strong> è il bracciale Mestel che ti permette di pagare
-      contactless ovunque, semplicemente avvicinando il polso al POS.
-      L'attivazione avviene tramite <strong>Fidesmo</strong> —
-      e per alcune carte potrebbe essere necessario <strong>Curve</strong>
-      come wallet compatibile.
-    </p>
-    <div class="intro__divider"></div>
+    <div class="intro__grid">
+      <div>
+        <p class="intro__label">Cos'è Novalink</p>
+        <h2 class="intro__title">Il pagamento è nel tuo polso.</h2>
+      </div>
+      <div>
+        <p class="intro__body">
+          <strong>Novalink</strong> è il bracciale Mestel che ti permette di pagare
+          contactless ovunque. L'attivazione avviene tramite <strong>Fidesmo</strong> —
+          per alcune carte potrebbe essere necessario <strong>Curve</strong> come wallet compatibile.
+        </p>
+        <div class="intro__pills">
+          <span class="intro__pill">Contactless</span>
+          <span class="intro__pill">Fidesmo</span>
+          <span class="intro__pill">Curve</span>
+          <span class="intro__pill">NFC</span>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <!-- ═══ STEPS ════════════════════════════════════════════════ -->
-  <div class="steps">
+  <div class="glow-divider"></div>
 
-    <!-- STEP 1 -->
-    <article class="step">
-      <div class="step__inner">
-        <div class="step__video">
-          <iframe src="https://drive.google.com/file/d/1Ekz6LszgXaPPZ-aRr-xq6HHtLKIY017i/preview" allow="autoplay" allowfullscreen></iframe>
-        </div>
+  <!-- ═══ STEPS ════════════════════════════════ -->
+  <div class="steps-label">
+    <span>Istruzioni</span>
+    <div class="steps-label-line"></div>
+    <span>11 passi</span>
+  </div>
+
+  <!-- STEP 1 -->
+  <article class="step">
+    <div class="step__inner">
+      <div class="step__video">
+        <iframe src="https://drive.google.com/file/d/1Ekz6LszgXaPPZ-aRr-xq6HHtLKIY017i/preview" allow="autoplay" allowfullscreen></iframe>
+      </div>
+      <div class="step__text">
         <div class="step__meta">
           <span class="step__number">Step 01</span>
-          <div class="step__line"></div>
+          <div class="step__meta-line"></div>
         </div>
         <h2 class="step__title">Scarica l'app Fidesmo</h2>
         <p class="step__desc">Scarica l'app Fidesmo da App Store o Google Play.</p>
       </div>
-    </article>
+    </div>
+  </article>
 
-    <!-- STEP 2 -->
-    <article class="step">
-      <div class="step__inner">
-        <div class="step__video">
-          <iframe src="https://drive.google.com/file/d/1zP3navCtQlZqbRfj7pTQBQ8EUcyNsDta/preview" allow="autoplay" allowfullscreen></iframe>
-        </div>
+  <!-- STEP 2 -->
+  <article class="step">
+    <div class="step__inner">
+      <div class="step__video">
+        <iframe src="https://drive.google.com/file/d/1zP3navCtQlZqbRfj7pTQBQ8EUcyNsDta/preview" allow="autoplay" allowfullscreen></iframe>
+      </div>
+      <div class="step__text">
         <div class="step__meta">
           <span class="step__number">Step 02</span>
-          <div class="step__line"></div>
+          <div class="step__meta-line"></div>
         </div>
         <h2 class="step__title">Associa il bracciale Novalink</h2>
-        <p class="step__desc">Apri Fidesmo e segui le istruzioni sullo schermo per associare il tuo bracciale Novalink. Potrebbero essere necessari alcuni passaggi.</p>
+        <p class="step__desc">Apri Fidesmo e segui le istruzioni sullo schermo per associare il tuo bracciale. Potrebbero essere necessari alcuni passaggi.</p>
       </div>
-    </article>
+    </div>
+  </article>
 
-    <!-- STEP 3+4 -->
-    <article class="step">
-      <div class="step__inner">
-        <div class="step__video">
-          <iframe src="https://drive.google.com/file/d/1hmlzP4CaayJhrH9NSmN9ca55P6uJ6qsr/preview" allow="autoplay" allowfullscreen></iframe>
-        </div>
+  <!-- STEP 3+4 -->
+  <article class="step">
+    <div class="step__inner">
+      <div class="step__video">
+        <iframe src="https://drive.google.com/file/d/1hmlzP4CaayJhrH9NSmN9ca55P6uJ6qsr/preview" allow="autoplay" allowfullscreen></iframe>
+      </div>
+      <div class="step__text">
         <div class="step__meta">
           <span class="step__number">Step 03</span>
-          <div class="step__line"></div>
+          <div class="step__meta-line"></div>
         </div>
         <h2 class="step__title">Completa la configurazione</h2>
         <p class="step__desc">Segui tutte le istruzioni nell'app fino alla conferma finale.</p>
-
         <div class="step__sub">
           <div class="step__meta">
             <span class="step__number">Step 04</span>
-            <div class="step__line"></div>
+            <div class="step__meta-line"></div>
           </div>
           <h2 class="step__title">Aggiungi la tua carta</h2>
           <p class="step__desc">Inserisci i dati della tua carta per completare l'attivazione.</p>
         </div>
       </div>
-    </article>
+    </div>
+  </article>
 
-    <!-- STEP 5 -->
-    <article class="step">
-      <div class="step__inner">
-        <div class="step__video">
-          <iframe src="https://drive.google.com/file/d/1e5nqzcwlJrwt9R_fThxDVRXsHuwEkwIl/preview" allow="autoplay" allowfullscreen></iframe>
-        </div>
+  <!-- STEP 5 -->
+  <article class="step">
+    <div class="step__inner">
+      <div class="step__video">
+        <iframe src="https://drive.google.com/file/d/1e5nqzcwlJrwt9R_fThxDVRXsHuwEkwIl/preview" allow="autoplay" allowfullscreen></iframe>
+      </div>
+      <div class="step__text">
         <div class="step__meta">
           <span class="step__number">Step 05</span>
-          <div class="step__line"></div>
+          <div class="step__meta-line"></div>
         </div>
         <h2 class="step__title">Carta non riconosciuta?</h2>
         <p class="step__desc">Alcune carte richiedono un wallet compatibile, come Curve.</p>
       </div>
-    </article>
+    </div>
+  </article>
 
-    <!-- STEP 6 -->
-    <article class="step">
-      <div class="step__inner">
-        <div class="step__video">
-          <iframe src="https://drive.google.com/file/d/1Am2b_fGGll6R-z6rHBfrIs7iJWoBprjM/preview" allow="autoplay" allowfullscreen></iframe>
-        </div>
+  <!-- STEP 6 -->
+  <article class="step">
+    <div class="step__inner">
+      <div class="step__video">
+        <iframe src="https://drive.google.com/file/d/1Am2b_fGGll6R-z6rHBfrIs7iJWoBprjM/preview" allow="autoplay" allowfullscreen></iframe>
+      </div>
+      <div class="step__text">
         <div class="step__meta">
           <span class="step__number">Step 06</span>
-          <div class="step__line"></div>
+          <div class="step__meta-line"></div>
         </div>
         <h2 class="step__title">Scarica l'app Curve</h2>
         <p class="step__desc">Scarica l'app Curve da App Store o Google Play e installala sul tuo dispositivo.</p>
       </div>
-    </article>
+    </div>
+  </article>
 
-    <!-- STEP 7 -->
-    <article class="step">
-      <div class="step__inner">
-        <div class="step__video">
-          <iframe src="https://drive.google.com/file/d/18k6U2yhnQss0ARw3wUcajs0dXiSVq8_R/preview" allow="autoplay" allowfullscreen></iframe>
-        </div>
+  <!-- STEP 7 -->
+  <article class="step">
+    <div class="step__inner">
+      <div class="step__video">
+        <iframe src="https://drive.google.com/file/d/18k6U2yhnQss0ARw3wUcajs0dXiSVq8_R/preview" allow="autoplay" allowfullscreen></iframe>
+      </div>
+      <div class="step__text">
         <div class="step__meta">
           <span class="step__number">Step 07</span>
-          <div class="step__line"></div>
+          <div class="step__meta-line"></div>
         </div>
         <h2 class="step__title">Collega la tua carta</h2>
         <p class="step__desc">Apri Curve e segui i passaggi per aggiungere la tua carta di pagamento.</p>
       </div>
-    </article>
+    </div>
+  </article>
 
-    <!-- STEP 8+9 -->
-    <article class="step">
-      <div class="step__inner">
-        <div class="step__video">
-          <iframe src="https://drive.google.com/file/d/1i4FX3mq2By05tsrPlAnfgjovOqSX7uwi/preview" allow="autoplay" allowfullscreen></iframe>
-        </div>
+  <!-- STEP 8+9 -->
+  <article class="step">
+    <div class="step__inner">
+      <div class="step__video">
+        <iframe src="https://drive.google.com/file/d/1i4FX3mq2By05tsrPlAnfgjovOqSX7uwi/preview" allow="autoplay" allowfullscreen></iframe>
+      </div>
+      <div class="step__text">
         <div class="step__meta">
           <span class="step__number">Step 08</span>
-          <div class="step__line"></div>
+          <div class="step__meta-line"></div>
         </div>
         <h2 class="step__title">Vai su Profilo</h2>
         <p class="step__desc">Dalla schermata principale di Curve, apri la sezione Profilo.</p>
-
         <div class="step__sub">
           <div class="step__meta">
             <span class="step__number">Step 09</span>
-            <div class="step__line"></div>
+            <div class="step__meta-line"></div>
           </div>
-          <h2 class="step__title">Tieni pronti i dati della carta Curve</h2>
+          <h2 class="step__title">Tieni pronti i dati della carta</h2>
           <p class="step__desc">Ti serviranno per completare l'attivazione su Fidesmo.</p>
         </div>
       </div>
-    </article>
+    </div>
+  </article>
 
-    <!-- STEP 10 -->
-    <article class="step">
-      <div class="step__inner">
-        <div class="step__video">
-          <iframe src="https://drive.google.com/file/d/1xGWVoXEvo-7B6iFRjJVv1KIb3dqYSM69/preview" allow="autoplay" allowfullscreen></iframe>
-        </div>
+  <!-- STEP 10 -->
+  <article class="step">
+    <div class="step__inner">
+      <div class="step__video">
+        <iframe src="https://drive.google.com/file/d/1xGWVoXEvo-7B6iFRjJVv1KIb3dqYSM69/preview" allow="autoplay" allowfullscreen></iframe>
+      </div>
+      <div class="step__text">
         <div class="step__meta">
           <span class="step__number">Step 10</span>
-          <div class="step__line"></div>
+          <div class="step__meta-line"></div>
         </div>
         <h2 class="step__title">Inserisci la carta Curve in Fidesmo</h2>
         <p class="step__desc">Usando Curve (o il tuo Wallet), Fidesmo potrà riconoscere correttamente la carta.</p>
       </div>
-    </article>
+    </div>
+  </article>
 
-  </div><!-- /steps -->
+  <div class="glow-divider"></div>
 
-  <!-- ═══ DONE ══════════════════════════════════════════════════ -->
+  <!-- ═══ DONE ══════════════════════════════════ -->
   <section class="done">
-
-    <div class="done__icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
+    <div class="done__band"></div>
+    <div class="done__band-glow"></div>
+    <div class="done__content">
+      <div class="done__check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <p class="done__label">Step 11 — Completato</p>
+      <h2 class="done__title">Fatto.</h2>
+      <p class="done__sub">Il tuo Novalink è pronto. Avvicina il polso al POS contactless e paga.</p>
+      <div class="done__logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 293.97 153.11">
+          <g>
+            <polygon fill="#fff" points="154.12 49.59 104.53 0 104.53 79.35 119.41 79.35 119.41 34.71 144.2 59.51 154.12 49.59"/>
+            <polygon fill="#fff" points="183.88 3.97 183.88 0 149.16 34.72 151.15 36.7 183.88 3.97"/>
+            <polygon fill="#fff" points="183.88 7.93 153.13 38.68 155.11 40.67 183.88 11.9 183.88 7.93"/>
+            <polygon fill="#fff" points="183.88 15.87 157.1 42.65 159.08 44.63 169 34.71 169 79.35 171.98 79.35 171.98 31.74 174.95 28.76 174.95 79.35 177.93 79.35 177.93 25.79 180.9 22.81 180.9 79.35 183.88 79.35 183.88 19.84 183.88 15.87"/>
+          </g>
+          <g>
+            <path fill="#fff" d="M44.34,152.42l-.07-32-15.86,26.48h-4l-15.86-26.07v31.59H0v-48.28h7.38l19.17,32,18.83-32h7.38l.07,48.28h-8.48Z"/>
+            <path fill="#fff" d="M105.53,144.91v7.52h-36.21v-48.28h35.24v7.52h-26.27v12.55h23.31v7.38h-23.31v13.31h27.24Z"/>
+            <path fill="#fff" d="M114.92,147.32l3.1-6.97c3.86,3.11,10,5.31,15.93,5.31,7.52,0,10.69-2.69,10.69-6.28,0-10.41-28.69-3.59-28.69-21.52,0-7.79,6.21-14.41,19.45-14.41,5.79,0,11.86,1.52,16.07,4.27l-2.83,6.97c-4.34-2.55-9.1-3.79-13.31-3.79-7.45,0-10.48,2.9-10.48,6.55,0,10.28,28.62,3.59,28.62,21.31,0,7.72-6.28,14.34-19.52,14.34-7.52,0-15.03-2.34-19.03-5.79Z"/>
+            <path fill="#fff" d="M174.92,111.73h-16v-7.59h40.97v7.59h-16v40.69h-8.97v-40.69Z"/>
+            <path fill="#fff" d="M246.31,144.91v7.52h-36.21v-48.28h35.24v7.52h-26.28v12.55h23.31v7.38h-23.31v13.31h27.24Z"/>
+            <path fill="#fff" d="M259.77,104.15h8.96v40.69h25.24v7.59h-34.21v-48.28Z"/>
+          </g>
+        </svg>
+      </div>
     </div>
-
-    <p class="done__label">Step 11 — Completato</p>
-
-    <h2 class="done__title">Fatto!</h2>
-
-    <p class="done__sub">
-      Il tuo bracciale Novalink è pronto.<br>
-      Ora puoi pagare avvicinando il polso al POS contactless.
-    </p>
-
-    <div class="done__logo">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 293.97 153.11">
-        <defs><style>.st0-done{fill:rgba(255,255,255,.18)}</style></defs>
-        <g>
-          <polygon class="st0-done" points="154.12 49.59 104.53 0 104.53 79.35 119.41 79.35 119.41 34.71 144.2 59.51 154.12 49.59"/>
-          <polygon class="st0-done" points="183.88 3.97 183.88 0 149.16 34.72 151.15 36.7 183.88 3.97"/>
-          <polygon class="st0-done" points="183.88 7.93 153.13 38.68 155.11 40.67 183.88 11.9 183.88 7.93"/>
-          <polygon class="st0-done" points="183.88 15.87 157.1 42.65 159.08 44.63 169 34.71 169 79.35 171.98 79.35 171.98 31.74 171.98 31.74 174.95 28.76 174.95 79.35 177.93 79.35 177.93 25.79 177.93 25.79 180.9 22.81 180.9 79.35 183.88 79.35 183.88 19.84 183.88 19.84 183.88 19.84 183.88 15.87"/>
-        </g>
-        <g>
-          <path class="st0-done" d="M44.34,152.42l-.07-32-15.86,26.48h-4l-15.86-26.07v31.59H0v-48.28h7.38l19.17,32,18.83-32h7.38l.07,48.28h-8.48Z"/>
-          <path class="st0-done" d="M105.53,144.91v7.52h-36.21v-48.28h35.24v7.52h-26.27v12.55h23.31v7.38h-23.31v13.31h27.24Z"/>
-          <path class="st0-done" d="M114.92,147.32l3.1-6.97c3.86,3.11,10,5.31,15.93,5.31,7.52,0,10.69-2.69,10.69-6.28,0-10.41-28.69-3.59-28.69-21.52,0-7.79,6.21-14.41,19.45-14.41,5.79,0,11.86,1.52,16.07,4.27l-2.83,6.97c-4.34-2.55-9.1-3.79-13.31-3.79-7.45,0-10.48,2.9-10.48,6.55,0,10.28,28.62,3.59,28.62,21.31,0,7.72-6.28,14.34-19.52,14.34-7.52,0-15.03-2.34-19.03-5.79Z"/>
-          <path class="st0-done" d="M174.92,111.73h-16v-7.59h40.97v7.59h-16v40.69h-8.97v-40.69Z"/>
-          <path class="st0-done" d="M246.31,144.91v7.52h-36.21v-48.28h35.24v7.52h-26.28v12.55h23.31v7.38h-23.31v13.31h27.24Z"/>
-          <path class="st0-done" d="M259.77,104.15h8.96v40.69h25.24v7.59h-34.21v-48.28Z"/>
-        </g>
-      </svg>
-    </div>
-
   </section>
 
-  <!-- ═══ PIN TIP ═══════════════════════════════════════════════ -->
+  <div class="glow-divider"></div>
+
+  <!-- ═══ PIN TIP ════════════════════════════════ -->
   <section class="pin-tip">
     <div class="pin-tip__inner">
-      <span class="pin-tip__badge">Step 12 — Nota</span>
-      <h2 class="pin-tip__title">Pagamenti che richiedono PIN</h2>
-      <p class="pin-tip__desc">
-        Per i pagamenti che richiedono PIN, ordina la carta fisica Curve
-        e utilizza il PIN associato.
-      </p>
+      <span class="pin-tip__badge">Step 12</span>
+      <div class="pin-tip__body">
+        <h3 class="pin-tip__title">Pagamenti che richiedono PIN</h3>
+        <p class="pin-tip__desc">Per i pagamenti che richiedono PIN, ordina la carta fisica Curve e utilizza il PIN associato.</p>
+      </div>
     </div>
   </section>
 
   <script>
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08 });
+    // Scroll progress band
+    const band = document.getElementById('progress-band');
+    window.addEventListener('scroll', () => {
+      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      band.style.width = pct + '%';
+    }, { passive: true });
 
+    // Intersection observer for fade-in
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.06 });
     document.querySelectorAll('.step, .done, .pin-tip').forEach(el => observer.observe(el));
+
+    // Cursor glow
+    const glow = document.getElementById('cursor-glow');
+    window.addEventListener('mousemove', e => {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top  = e.clientY + 'px';
+    }, { passive: true });
   </script>
 
 </body>
