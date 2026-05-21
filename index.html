@@ -75,21 +75,20 @@
       fill: #ffffff;
     }
 
-    /* ── HERO VIDEO ───────────────────────────── */
+    /* ── HERO GIF ─────────────────────────────── */
     .hero__video-wrap {
       position: relative;
       z-index: 3;
-      width: clamp(240px, 60vw, 360px);
-      aspect-ratio: 9/16;
+      width: clamp(240px, 65vw, 400px);
       border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 0 40px rgba(0,229,200,.1), 0 0 80px rgba(0,229,200,.05);
     }
 
-    .hero__video-wrap iframe {
+    .hero__video-wrap img {
       width: 100%;
       height: 100%;
-      border: none;
+      object-fit: cover;
       display: block;
     }
 
@@ -519,10 +518,9 @@
       </svg>
     </div>
 
-    <!-- Video cinturino nella hero -->
+    <!-- GIF cinturino nella hero -->
     <div class="hero__video-wrap">
-      <iframe src="https://drive.google.com/file/d/1yKgn--FzzIYPcs62TK8fme8dACVuUlBb/preview"
-              allow="autoplay" allowfullscreen></iframe>
+      <img src="effetto-cinturino.gif" alt="Novalink cinturino">
     </div>
 
     <div class="hero__scroll">
