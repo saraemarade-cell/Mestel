@@ -75,49 +75,21 @@
       fill: #ffffff;
     }
 
-    /* ── BRACELET SCENE ───────────────────────── */
-    .band-scene {
+    /* ── HERO VIDEO ───────────────────────────── */
+    .hero__video-wrap {
       position: relative;
       z-index: 3;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 18px;
+      width: clamp(260px, 70vw, 420px);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0,229,200,.1), 0 0 80px rgba(0,229,200,.05);
     }
 
-    .band-label {
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: .35em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.4);
-    }
-
-    /* SVG bracelet container */
-    .bracelet-wrap {
-      position: relative;
-      width: clamp(260px, 70vw, 360px);
-    }
-
-    .bracelet-svg {
+    .hero__video-wrap video {
       width: 100%;
-      height: auto;
       display: block;
-      overflow: visible;
+      border-radius: 20px;
     }
-
-    /* ── NFC INDICATOR ────────────────────────── */
-    .nfc-wrap {
-      position: absolute;
-      left: calc(12% - 5px);
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    /* nasconde il dot CSS — c'è già nel SVG */
-    .nfc-dot { display: none; }
 
     .nfc-dot {
       width: 10px;
@@ -545,77 +517,11 @@
       </svg>
     </div>
 
-    <!-- Bracelet scene — cinturino SVG con luce perimetrale -->
-    <div class="band-scene">
-      <span class="band-label">Novalink</span>
-
-      <div class="bracelet-wrap">
-        <!--
-          viewBox 0 0 360 72  →  cinturino piatto rx=36
-          Perimetro ≈ 2*(360-72) + π*72 ≈ 576 + 226 ≈ 802
-        -->
-        <svg class="bracelet-svg" viewBox="0 0 360 72" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <filter id="glow-filter" x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur stdDeviation="2.5" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-
-          <!-- Corpo cinturino — gomma scura piatta -->
-          <rect x="2" y="2" width="356" height="68" rx="34"
-                fill="#141414" stroke="rgba(0,229,200,0.1)" stroke-width="1"/>
-
-          <!-- Texture interna — riga centrale sottile -->
-          <line x1="36" y1="36" x2="324" y2="36"
-                stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
-
-          <!-- Luce perimetrale — alone esterno morbido -->
-          <rect x="2" y="2" width="356" height="68" rx="34"
-                fill="none" stroke="rgba(0,229,200,0.2)" stroke-width="10"
-                stroke-dasharray="60 742">
-            <animate attributeName="stroke-dashoffset"
-                     from="0" to="-802"
-                     dur="2.5s" calcMode="linear" repeatCount="indefinite"/>
-          </rect>
-
-          <!-- Luce perimetrale — alone medio -->
-          <rect x="2" y="2" width="356" height="68" rx="34"
-                fill="none" stroke="rgba(0,229,200,0.6)" stroke-width="2.5"
-                stroke-dasharray="22 780">
-            <animate attributeName="stroke-dashoffset"
-                     from="0" to="-802"
-                     dur="2.5s" calcMode="linear" repeatCount="indefinite"/>
-          </rect>
-
-          <!-- Luce perimetrale — punto core brillante -->
-          <rect x="2" y="2" width="356" height="68" rx="34"
-                fill="none" stroke="rgba(200,255,250,0.95)" stroke-width="1.5"
-                stroke-dasharray="6 796" filter="url(#glow-filter)">
-            <animate attributeName="stroke-dashoffset"
-                     from="0" to="-802"
-                     dur="2.5s" calcMode="linear" repeatCount="indefinite"/>
-          </rect>
-
-          <!-- Chip NFC — punto sul lato sinistro -->
-          <circle id="nfc-svg-dot" cx="44" cy="36" r="5"
-                  fill="#00E5C8" opacity="1">
-            <animate attributeName="opacity"
-                     values="1;0.4;1" dur="3s" repeatCount="indefinite"/>
-          </circle>
-        </svg>
-
-        <!-- Rings NFC (sovrapposti via CSS) -->
-        <div class="nfc-wrap">
-          <div class="nfc-dot" id="nfc-dot"></div>
-          <div class="nfc-ring" id="nfc-ring-1"></div>
-          <div class="nfc-ring" id="nfc-ring-2"></div>
-          <div class="nfc-ring" id="nfc-ring-3"></div>
-          <span id="nfc-active-text">NFC Active</span>
-        </div>
-      </div>
-
-      <span class="band-tagline">Powered by NFC · Mestel</span>
+    <!-- Video cinturino nella hero -->
+    <div class="hero__video-wrap">
+      <video autoplay loop muted playsinline>
+        <source src="effetto cinturino.mp4" type="video/mp4">
+      </video>
     </div>
 
     <div class="hero__scroll">
@@ -849,56 +755,6 @@
     }, { passive: true });
 
 
-    // ── NFC TAP SEQUENCE ─────────────────────
-    const dot    = document.getElementById('nfc-dot');
-    const rings  = [document.getElementById('nfc-ring-1'), document.getElementById('nfc-ring-2'), document.getElementById('nfc-ring-3')];
-    const label  = document.getElementById('nfc-active-text');
-    const circles = document.querySelectorAll('.ambient-circle');
-
-    function resetRing(ring) {
-      ring.classList.remove('fire');
-      void ring.offsetWidth; // reflow
-    }
-
-    function nfcTap() {
-      // 1. Dot pulse
-      dot.classList.remove('pulse-anim');
-      void dot.offsetWidth;
-      dot.classList.add('pulse-anim');
-      dot.addEventListener('animationend', () => dot.classList.remove('pulse-anim'), { once: true });
-
-      // 2. Ambient circles brighten
-      circles.forEach(c => {
-        c.classList.remove('dim');
-        c.classList.add('bright');
-        setTimeout(() => { c.classList.remove('bright'); c.classList.add('dim'); }, 300);
-      });
-
-      // 3. Rings expand (staggered)
-      rings.forEach((ring, i) => {
-        setTimeout(() => {
-          resetRing(ring);
-          ring.classList.add('fire');
-          ring.addEventListener('animationend', () => ring.classList.remove('fire'), { once: true });
-        }, i * 300);
-      });
-
-      // 4. NFC ACTIVE label
-      setTimeout(() => {
-        label.classList.remove('hide');
-        label.classList.add('show');
-        setTimeout(() => {
-          label.classList.remove('show');
-          label.classList.add('hide');
-        }, 1500);
-      }, 200);
-    }
-
-    // Fire on load after logo animation
-    setTimeout(nfcTap, 2400);
-
-    // Repeat every 5s
-    setInterval(nfcTap, 5000);
   </script>
 
 </body>
