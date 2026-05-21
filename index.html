@@ -55,33 +55,24 @@
       overflow: hidden;
     }
 
-    /* ── MESTEL LOGO (stroke draw) ────────────── */
+    /* ── MESTEL LOGO ──────────────────────────── */
     .hero__logo-wrap {
       position: relative;
       z-index: 4;
       margin-bottom: 44px;
       opacity: 0;
-      animation: fadeIn .1s ease forwards .1s;
+      animation: fadeIn .6s ease forwards .3s;
     }
 
     #mestel-logo {
       width: clamp(120px, 30vw, 180px);
       height: auto;
       display: block;
-      filter: drop-shadow(0 0 6px rgba(255,255,255,.7)) drop-shadow(0 0 14px rgba(255,255,255,.3));
-      transition: filter .6s ease;
-    }
-
-    #mestel-logo.filled {
-      filter: drop-shadow(0 0 2px rgba(255,255,255,.2));
     }
 
     #mestel-logo path,
     #mestel-logo polygon {
-      fill: none;
-      stroke: #ffffff;
-      stroke-width: 1.2;
-      stroke-linejoin: round;
+      fill: #ffffff;
     }
 
     /* ── BRACELET SCENE ───────────────────────── */
@@ -319,7 +310,13 @@
       border-radius: 20px; overflow: hidden;
       background: rgba(255,255,255,.02);
       position: relative;
+      display: flex;
+      flex-direction: column;
       transition: border-color .4s ease, box-shadow .4s ease;
+    }
+
+    @media (min-width: 700px) {
+      .step__inner { flex-direction: row; align-items: stretch; }
     }
 
     .step__inner:hover {
@@ -338,15 +335,21 @@
 
     .step__inner:hover::before { opacity: 1; }
 
+    /* Video — colonna sinistra */
     .step__video {
-      width: 100%; aspect-ratio: 9/16;
-      background: #000; position: relative; overflow: hidden;
+      flex: 0 0 auto;
+      width: 100%;
+      aspect-ratio: 9/16;
+      background: #000;
+      position: relative;
+      overflow: hidden;
     }
 
-    @media (min-width: 600px) {
+    @media (min-width: 700px) {
       .step__video {
-        aspect-ratio: 9/16; max-height: 70vh;
-        width: auto; margin: 0 auto; display: block;
+        width: 40%;
+        aspect-ratio: 9/16;
+        max-height: 540px;
       }
     }
 
@@ -354,12 +357,27 @@
 
     .step__video::after {
       content: '';
-      position: absolute; bottom: 0; left: 10%; right: 10%; height: 1px;
+      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
       background: linear-gradient(90deg, transparent, rgba(0,229,200,.3) 50%, transparent);
       box-shadow: 0 0 10px 2px rgba(0,229,200,.15);
     }
 
-    .step__text { padding: 28px 28px 32px; }
+    @media (min-width: 700px) {
+      .step__video::after {
+        bottom: auto; right: 0; top: 10%; bottom: 10%;
+        left: auto; width: 1px; height: auto;
+        background: linear-gradient(to bottom, transparent, rgba(0,229,200,.3) 50%, transparent);
+      }
+    }
+
+    /* Testo — colonna destra */
+    .step__text {
+      padding: 28px 28px 32px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
     .step__meta {
       display: flex; align-items: center; gap: 16px; margin-bottom: 14px;
@@ -830,36 +848,6 @@
       glow.style.top  = e.clientY + 'px';
     }, { passive: true });
 
-    // ── STROKE DRAW LOGO — veloce + luminoso ──
-    window.addEventListener('load', () => {
-      const logo = document.getElementById('mestel-logo');
-      const els  = logo.querySelectorAll('path, polygon');
-
-      els.forEach(el => {
-        const len = el.getTotalLength ? el.getTotalLength() : 300;
-        el.style.strokeDasharray  = len;
-        el.style.strokeDashoffset = len;
-        el.style.fill        = 'none';
-        el.style.stroke      = '#ffffff';
-        el.style.strokeWidth = '1.2';
-        el.style.transition  = 'stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1) 0.2s';
-      });
-
-      // Disegna veloce
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        els.forEach(el => { el.style.strokeDashoffset = '0'; });
-      }));
-
-      // Riempie + toglie il glow
-      setTimeout(() => {
-        els.forEach(el => {
-          el.style.transition  = 'fill .4s ease, stroke-width .4s ease';
-          el.style.fill        = '#ffffff';
-          el.style.strokeWidth = '0';
-        });
-        logo.classList.add('filled');
-      }, 1200);
-    });
 
     // ── NFC TAP SEQUENCE ─────────────────────
     const dot    = document.getElementById('nfc-dot');
