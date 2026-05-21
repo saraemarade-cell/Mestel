@@ -59,7 +59,7 @@
     .hero__logo-wrap {
       position: relative;
       z-index: 4;
-      margin-bottom: 52px;
+      margin-bottom: 44px;
       opacity: 0;
       animation: fadeIn .1s ease forwards .1s;
     }
@@ -68,6 +68,12 @@
       width: clamp(120px, 30vw, 180px);
       height: auto;
       display: block;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,.7)) drop-shadow(0 0 14px rgba(255,255,255,.3));
+      transition: filter .6s ease;
+    }
+
+    #mestel-logo.filled {
+      filter: drop-shadow(0 0 2px rgba(255,255,255,.2));
     }
 
     #mestel-logo path,
@@ -78,46 +84,7 @@
       stroke-linejoin: round;
     }
 
-    /* ── AMBIENT CIRCLES ──────────────────────── */
-    .ambient-circles {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .ambient-circle {
-      position: absolute;
-      border-radius: 50%;
-      border: 0.5px solid rgba(0,229,200,0.07);
-      transform: translate(-50%, -50%);
-      left: 50%; top: 50%;
-    }
-
-    .ambient-circle-1 { width: 380px; height: 380px; margin: -190px 0 0 -190px; position: absolute; left: 50%; top: 50%; transform: none; }
-    .ambient-circle-2 { width: 580px; height: 580px; margin: -290px 0 0 -290px; position: absolute; left: 50%; top: 50%; transform: none; }
-
-    .ambient-circle {
-      position: absolute;
-      border-radius: 50%;
-      border: 0.5px solid rgba(0,229,200,0.07);
-      transition: border-color .3s ease;
-    }
-
-    .ambient-circle.bright {
-      border-color: rgba(0,229,200,0.25);
-      transition: border-color .3s ease;
-    }
-
-    .ambient-circle.dim {
-      border-color: rgba(0,229,200,0.07);
-      transition: border-color .8s ease;
-    }
-
-    /* ── BAND SCENE ───────────────────────────── */
+    /* ── BRACELET SCENE ───────────────────────── */
     .band-scene {
       position: relative;
       z-index: 3;
@@ -135,55 +102,31 @@
       color: rgba(255,255,255,.4);
     }
 
-    /* ── CINTURINO ────────────────────────────── */
-    .band-wrap {
+    /* SVG bracelet container */
+    .bracelet-wrap {
       position: relative;
-      width: 320px;
-      height: 60px;
+      width: clamp(260px, 70vw, 360px);
     }
 
-    .band {
+    .bracelet-svg {
       width: 100%;
-      height: 100%;
-      background: #1a1a1a;
-      border-radius: 30px;
-      border: 1px solid rgba(0,229,200,0.3);
-      box-shadow: 0 0 18px rgba(0,229,200,0.15);
-      overflow: hidden;
-      position: relative;
-    }
-
-    /* Running light inside the band */
-    .band__light {
-      position: absolute;
-      inset: 0;
-      border-radius: 30px;
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        transparent 20%,
-        rgba(0,229,200,0.6) 50%,
-        transparent 80%,
-        transparent 100%
-      );
-      background-size: 200% 100%;
-      background-position: -100% 0;
-      animation: runLight 2.5s ease-in-out infinite;
-    }
-
-    @keyframes runLight {
-      0%   { background-position: -100% 0; }
-      100% { background-position: 200% 0; }
+      height: auto;
+      display: block;
+      overflow: visible;
     }
 
     /* ── NFC INDICATOR ────────────────────────── */
     .nfc-wrap {
       position: absolute;
-      left: 28px;
+      left: calc(13% - 5px);
       top: 50%;
       transform: translateY(-50%);
       z-index: 2;
+      pointer-events: none;
     }
+
+    /* nasconde il dot CSS perché c'è già in SVG */
+    .nfc-dot { display: none; }
 
     .nfc-dot {
       width: 10px;
@@ -562,13 +505,7 @@
   ════════════════════════════════════════════ -->
   <section class="hero">
 
-    <!-- Ambient circles -->
-    <div class="ambient-circles">
-      <div class="ambient-circle ambient-circle-1" style="width:380px;height:380px;left:calc(50% - 190px);top:calc(50% - 190px);"></div>
-      <div class="ambient-circle ambient-circle-2" style="width:580px;height:580px;left:calc(50% - 290px);top:calc(50% - 290px);"></div>
-    </div>
-
-    <!-- Mestel Logo — stroke draw -->
+    <!-- Mestel Logo — stroke draw luminoso -->
     <div class="hero__logo-wrap">
       <svg id="mestel-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 293.97 153.11">
         <g>
@@ -588,16 +525,67 @@
       </svg>
     </div>
 
-    <!-- Band scene -->
-    <div class="band-scene" style="position:relative;z-index:3;">
+    <!-- Bracelet scene — cinturino SVG con luce perimetrale -->
+    <div class="band-scene">
       <span class="band-label">Novalink</span>
 
-      <div class="band-wrap">
-        <div class="band">
-          <div class="band__light"></div>
-        </div>
+      <div class="bracelet-wrap">
+        <!--
+          viewBox 0 0 360 140  →  pill con rx=70
+          Perimetro ≈ 2*(360-140) + π*140 ≈ 440 + 439.8 ≈ 880
+        -->
+        <svg class="bracelet-svg" viewBox="0 0 360 140" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
 
-        <!-- NFC indicator -->
+          <!-- Corpo cinturino — gomma scura -->
+          <rect x="2" y="2" width="356" height="136" rx="68"
+                fill="#141414" stroke="rgba(0,229,200,0.12)" stroke-width="1"/>
+
+          <!-- Foro polso — taglio interno -->
+          <rect x="72" y="32" width="216" height="76" rx="38"
+                fill="#03080a" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+
+          <!-- Luce perimetrale — alone esterno -->
+          <rect x="2" y="2" width="356" height="136" rx="68"
+                fill="none" stroke="rgba(0,229,200,0.18)" stroke-width="10"
+                stroke-dasharray="70 810">
+            <animate attributeName="stroke-dashoffset"
+                     from="0" to="-880"
+                     dur="2.5s" calcMode="linear" repeatCount="indefinite"/>
+          </rect>
+
+          <!-- Luce perimetrale — alone medio -->
+          <rect x="2" y="2" width="356" height="136" rx="68"
+                fill="none" stroke="rgba(0,229,200,0.55)" stroke-width="3"
+                stroke-dasharray="28 852">
+            <animate attributeName="stroke-dashoffset"
+                     from="0" to="-880"
+                     dur="2.5s" calcMode="linear" repeatCount="indefinite"/>
+          </rect>
+
+          <!-- Luce perimetrale — punto luminoso core -->
+          <rect x="2" y="2" width="356" height="136" rx="68"
+                fill="none" stroke="rgba(210,255,250,0.95)" stroke-width="1.5"
+                stroke-dasharray="7 873" filter="url(#glow-filter)">
+            <animate attributeName="stroke-dashoffset"
+                     from="0" to="-880"
+                     dur="2.5s" calcMode="linear" repeatCount="indefinite"/>
+          </rect>
+
+          <!-- Chip NFC — punto fisso sul lato sinistro -->
+          <circle id="nfc-svg-dot" cx="46" cy="70" r="5"
+                  fill="#00E5C8" opacity="1">
+            <animate attributeName="opacity"
+                     values="1;0.5;1" dur="3s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+
+        <!-- Rings NFC (sovrapposti via CSS) -->
         <div class="nfc-wrap">
           <div class="nfc-dot" id="nfc-dot"></div>
           <div class="nfc-ring" id="nfc-ring-1"></div>
@@ -840,34 +828,35 @@
       glow.style.top  = e.clientY + 'px';
     }, { passive: true });
 
-    // ── STROKE DRAW LOGO ──────────────────────
+    // ── STROKE DRAW LOGO — veloce + luminoso ──
     window.addEventListener('load', () => {
-      const els = document.querySelectorAll('#mestel-logo path, #mestel-logo polygon');
+      const logo = document.getElementById('mestel-logo');
+      const els  = logo.querySelectorAll('path, polygon');
+
       els.forEach(el => {
         const len = el.getTotalLength ? el.getTotalLength() : 300;
         el.style.strokeDasharray  = len;
         el.style.strokeDashoffset = len;
-        el.style.fill   = 'none';
-        el.style.stroke = '#ffffff';
+        el.style.fill        = 'none';
+        el.style.stroke      = '#ffffff';
         el.style.strokeWidth = '1.2';
-        el.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1) .3s';
+        el.style.transition  = 'stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1) 0.2s';
       });
 
-      // Draw strokes
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          els.forEach(el => { el.style.strokeDashoffset = '0'; });
-        });
-      });
+      // Disegna veloce
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        els.forEach(el => { el.style.strokeDashoffset = '0'; });
+      }));
 
-      // Fill color after draw
+      // Riempie + toglie il glow
       setTimeout(() => {
         els.forEach(el => {
-          el.style.transition = 'fill .5s ease, stroke-width .5s ease';
+          el.style.transition  = 'fill .4s ease, stroke-width .4s ease';
           el.style.fill        = '#ffffff';
           el.style.strokeWidth = '0';
         });
-      }, 2000);
+        logo.classList.add('filled');
+      }, 1200);
     });
 
     // ── NFC TAP SEQUENCE ─────────────────────
