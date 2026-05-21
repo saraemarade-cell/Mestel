@@ -79,16 +79,18 @@
     .hero__video-wrap {
       position: relative;
       z-index: 3;
-      width: clamp(260px, 70vw, 420px);
+      width: clamp(240px, 60vw, 360px);
+      aspect-ratio: 9/16;
       border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 0 40px rgba(0,229,200,.1), 0 0 80px rgba(0,229,200,.05);
     }
 
-    .hero__video-wrap video {
+    .hero__video-wrap iframe {
       width: 100%;
+      height: 100%;
+      border: none;
       display: block;
-      border-radius: 20px;
     }
 
     .nfc-dot {
@@ -519,9 +521,8 @@
 
     <!-- Video cinturino nella hero -->
     <div class="hero__video-wrap">
-      <video autoplay loop muted playsinline>
-        <source src="effetto-cinturino.mp4" type="video/mp4">
-      </video>
+      <iframe src="https://drive.google.com/file/d/1bWu2CJlPUiR-htDx903enKpeTLxdJq3W/preview"
+              allow="autoplay" allowfullscreen></iframe>
     </div>
 
     <div class="hero__scroll">
