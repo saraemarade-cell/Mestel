@@ -44,13 +44,12 @@ ny = (YY - CY) / RY
 # Back / top rim           → ny < 0 → pixel_angle ∈ (−π, 0)
 pixel_angle = np.arctan2(ny, nx).astype(np.float32)
 
-# ── Front-arc parameterisation ────────────────────────────────────────────────
-# is_front: 1 for front face pixels (angle ∈ [0, π])
-is_front = (pixel_angle >= 0.0).astype(np.float32)
-
-# fill_pos ∈ [0, 1] along the front arc: 0 = RIGHT extreme, 1 = LEFT extreme
-# Charge starts RIGHT → sweeps LEFT. Discharge: LEFT goes dark first → RIGHT last.
-fill_pos = pixel_angle / math.pi   # angle=0 (right)→0, angle=π (left)→1
+# ── Full-circle parameterisation ─────────────────────────────────────────────
+# Fill wraps the ENTIRE bracelet starting from the right side (angle=0),
+# going clockwise: right → bottom-front → left → top-back → right.
+# fill_pos ∈ [0,1]: 0=right, 0.25=bottom, 0.5=left, 0.75=top, 1.0=full circle
+pixel_angle_wrapped = (pixel_angle % (2.0 * math.pi)).astype(np.float32)
+fill_pos = (pixel_angle_wrapped / (2.0 * math.pi)).astype(np.float32)
 
 # Distance from ellipse centre-line (for the halo bloom that extends beyond strap)
 ex = CX + RX * np.cos(pixel_angle)
@@ -91,10 +90,9 @@ def fill_mask(fill_ratio: float):
 
     # Linear ramp clamped to [0,1] — smooth but free of cosine overshoot
     lit  = np.clip(d + 0.5, 0.0, 1.0).astype(np.float32)
-    lit *= is_front          # back face always stays dark
 
     # Gaussian peak right at the boundary for the bright leading edge
-    edge = (np.exp(-d**2 / (2 * 0.65**2)) * is_front).astype(np.float32)
+    edge = np.exp(-d**2 / (2 * 0.65**2)).astype(np.float32)
 
     return lit, edge
 
