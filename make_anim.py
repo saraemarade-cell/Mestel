@@ -1,20 +1,15 @@
 """
-Bracelet charging animation.
+Bracelet charging animation — front face fill, left → right, then reverse.
 
-Behavior:
-  - The front visible face of the bracelet fills with light from left → right.
-  - Once fully lit, the light shrinks back right → left (discharge).
-  - Repeat infinitely — seamless, no cuts.
+Geometry fix: in image coordinates y increases downward, so the FRONT FACE
+(lower portion of image) has pixel_angle ∈ [0, π].  The correct front-arc
+parameterisation is fill_pos = (π − angle) / π → 0 at left, 1 at right.
 
-Technique:
-  - Pixels are parameterised by their angular position along the FRONT ARC
-    of the ellipse (lower half, angle ∈ [−π, 0]), mapped to [0, 1] left→right.
-  - fill_ratio = (1 − cos(2π × progress)) / 2  →  0 at start/end, 1 at midpoint.
-    The cosine gives natural ease-in/ease-out AND guarantees seamless looping
-    because the value and its derivative are both identical at progress=0 and 1.
-  - A soft linear ramp (width = EDGE_W arc-fraction) creates the smooth
-    transition edge — no hard lines.
-  - White luminous core + light cyan-white bloom at the leading edge.
+Loop guarantee: fill_ratio = (1 − cos(2π × progress)) / 2
+  progress=0   → fill_ratio=0  (dark, derivative=0)
+  progress=0.5 → fill_ratio=1  (fully lit)
+  progress=1   → fill_ratio=0  (dark again, derivative=0)
+Both value AND derivative match at the loop boundary → perfectly seamless.
 """
 from PIL import Image, ImageFilter
 import numpy as np
@@ -36,88 +31,86 @@ b_rgb   = b_arr[:, :, :3] / 255.0
 
 # ── Ellipse geometry ──────────────────────────────────────────────────────────
 CX, CY = W * 0.50, H * 0.52
-RX, RY = W * 0.44, H * 0.24
+RX, RY = W * 0.45, H * 0.25
 
 xs = np.arange(W, dtype=np.float32)
 ys = np.arange(H, dtype=np.float32)
 XX, YY = np.meshgrid(xs, ys)
 nx = (XX - CX) / RX
 ny = (YY - CY) / RY
-pixel_angle = np.arctan2(ny, nx).astype(np.float32)   # −π … π
 
-# Distance from ellipse centre-line (for halo bloom)
+# In image coords y increases downward.
+# Front face (lower image) → ny > 0 → pixel_angle ∈ (0, π)
+# Back / top rim           → ny < 0 → pixel_angle ∈ (−π, 0)
+pixel_angle = np.arctan2(ny, nx).astype(np.float32)
+
+# ── Front-arc parameterisation ────────────────────────────────────────────────
+# is_front: 1 for front face pixels (angle ∈ [0, π])
+is_front = (pixel_angle >= 0.0).astype(np.float32)
+
+# fill_pos ∈ [0, 1] along the front arc: 0 = left extreme, 1 = right extreme
+# (angle=π → left visible end → fill_pos=0; angle=0 → right visible end → fill_pos=1)
+fill_pos = (math.pi - pixel_angle) / math.pi   # ∈ [0,1] on front, ∈ [1,2] on back
+
+# Distance from ellipse centre-line (for the halo bloom that extends beyond strap)
 ex = CX + RX * np.cos(pixel_angle)
 ey = CY + RY * np.sin(pixel_angle)
 dist_ellipse = np.sqrt((XX - ex)**2 + (YY - ey)**2).astype(np.float32)
-HALO_W = 32.0
-g_halo = np.exp(-dist_ellipse**2 / (2 * HALO_W**2)).astype(np.float32)
-
-# ── Front-arc parameterisation ────────────────────────────────────────────────
-# Front visible face = lower half of ellipse = angles in [−π, 0].
-# Map to fill_pos ∈ [0, 1] where 0 = leftmost point, 1 = rightmost.
-is_front = (pixel_angle <= 0.0).astype(np.float32)          # 1 on front, 0 on back
-fill_pos  = (pixel_angle + math.pi) / math.pi               # [0,1] on front, [1,2] on back
-# Back pixels get a fill_pos > 1 so they are never lit by the fill mask.
+HALO_W = 36.0
+g_halo  = np.exp(-dist_ellipse**2 / (2 * HALO_W**2)).astype(np.float32)
 
 # ── Animation settings ────────────────────────────────────────────────────────
 FPS        = 24
-DURATION_S = 4.0                          # one charge + discharge cycle
-N_FRAMES   = int(FPS * DURATION_S)        # 96 frames
-FRAME_MS   = int(1000 / FPS)              # ~42 ms
+DURATION_S = 4.5                       # one charge + discharge cycle
+N_FRAMES   = int(FPS * DURATION_S)     # 108 frames
+FRAME_MS   = int(1000 / FPS)           # ~41 ms
 
-# Motion-blur sub-steps: average N_BLUR fill positions centred on each frame
-# so the moving edge is always smooth even at speed.
-N_BLUR     = 7
-STEP       = 1.0 / N_FRAMES              # one frame's worth of progress
-BLUR_HALF  = STEP * 0.7                  # half-width of blur window
+# Temporal motion blur: average N_BLUR fill positions per frame
+N_BLUR    = 9
+BLUR_HALF = (1.0 / N_FRAMES) * 0.75   # smear ±0.75 frame-steps
 
-# Soft edge: ramp width as a fraction of the full arc [0, 1]
-EDGE_W = 0.11
+# Soft edge width as fraction of total arc
+EDGE_W = 0.16
 
 # Colours
-WHITE_CORE  = np.array([1.00, 1.00, 1.00], dtype=np.float32)
-EDGE_GLOW_C = np.array([0.88, 0.97, 1.00], dtype=np.float32)  # very slight cool-white at edge
+WHITE  = np.array([1.00, 1.00, 1.00], dtype=np.float32)
+CORONA = np.array([0.82, 0.95, 1.00], dtype=np.float32)  # very light cool-white
 
 
+# ── Core fill function ────────────────────────────────────────────────────────
 def fill_mask(fill_ratio: float):
     """
-    Returns (lit, edge_glow) arrays for a given fill_ratio ∈ [0, 1].
-    fill_ratio 0 → fully dark, fill_ratio 1 → fully lit.
-
-    lit       : 0…1, 1 = fully illuminated bracelet pixel
-    edge_glow : peaks at the moving boundary, 0 elsewhere
+    Returns lit [0…1] and edge_peak [0…1] for a given fill_ratio ∈ [0,1].
+    Extends fill by EDGE_W/2 beyond [0,1] so the bracelet is fully dark at 0
+    and fully lit at 1 with no half-lit border artefact.
     """
-    # Extend the fill slightly beyond [0,1] so bracelet is fully dark at ratio=0
-    # and fully lit at ratio=1, with no half-lit edge hanging off either extreme.
-    fill_ext = fill_ratio * (1.0 + EDGE_W) - EDGE_W / 2.0
+    fill_ext = fill_ratio * (1.0 + EDGE_W) - EDGE_W * 0.5
 
-    # Signed distance to fill boundary (positive = lit side)
-    d = (fill_ext - fill_pos) / EDGE_W                  # ∈ (−∞, +∞)
+    # Signed distance to fill boundary: positive = lit side
+    d = (fill_ext - fill_pos) / EDGE_W
 
+    # Linear ramp clamped to [0,1] — smooth but free of cosine overshoot
     lit  = np.clip(d + 0.5, 0.0, 1.0).astype(np.float32)
-    lit *= is_front                                       # back of bracelet stays dark
+    lit *= is_front          # back face always stays dark
 
-    # Gaussian peak at the boundary (d = 0) for the bright leading edge
-    edge = np.exp(-d**2 / (2 * 0.55**2)).astype(np.float32) * is_front
+    # Gaussian peak right at the boundary for the bright leading edge
+    edge = (np.exp(-d**2 / (2 * 0.65**2)) * is_front).astype(np.float32)
 
     return lit, edge
 
 
+# ── Frame renderer ────────────────────────────────────────────────────────────
 def make_frame(progress: float) -> Image.Image:
     """
     progress ∈ [0, 1).
-    fill_ratio = (1 − cos(2π × progress)) / 2 gives:
-      0 at progress 0  (dark)
-      1 at progress 0.5 (fully lit)
-      0 at progress 1  (dark again — seamless loop)
+    fill_ratio = (1 − cos(2π × p)) / 2  →  ease-in/ease-out, seamless loop.
     """
-    # Accumulate over N_BLUR sub-steps for temporal motion blur
     lit_acc  = np.zeros((H, W), dtype=np.float32)
     edge_acc = np.zeros((H, W), dtype=np.float32)
 
     for k in range(N_BLUR):
-        t = progress + (k / (N_BLUR - 1) - 0.5) * 2 * BLUR_HALF
-        fr = (1.0 - math.cos(2 * math.pi * t)) / 2.0
+        t  = progress + (k / (N_BLUR - 1) - 0.5) * 2.0 * BLUR_HALF
+        fr = (1.0 - math.cos(2.0 * math.pi * t)) / 2.0
         l, e = fill_mask(fr)
         lit_acc  += l
         edge_acc += e
@@ -127,44 +120,48 @@ def make_frame(progress: float) -> Image.Image:
 
     # Mask to bracelet silhouette
     lit_surface  = lit_acc  * b_alpha
-    edge_surface = np.clip(edge_acc * b_alpha * 1.4, 0.0, 1.0)
+    edge_surface = np.clip(edge_acc * b_alpha * 1.6, 0.0, 1.0)
 
-    # Halo extends slightly beyond the strap edges
-    halo = np.clip(lit_surface * g_halo * 0.55 + edge_surface * g_halo * 0.50, 0.0, 1.0)
+    # Wide halo — soft glow that bleeds slightly beyond the strap edges
+    halo = np.clip(
+        lit_surface  * g_halo * 0.60 +
+        edge_surface * g_halo * 0.55,
+        0.0, 1.0
+    )
 
-    # ── Compose onto bracelet base ────────────────────────────────────────────
+    # ── Screen-blend layers onto the bracelet surface ─────────────────────────
     out = b_rgb.copy()
     for ch in range(3):
-        # Lit surface → bright white
-        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - lit_surface  * WHITE_CORE[ch]  * 1.10)
-        # Leading edge → cool-white corona
-        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - edge_surface * EDGE_GLOW_C[ch] * 0.45)
-        # Halo
-        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - halo         * EDGE_GLOW_C[ch] * 0.30)
+        # 1. Lit region → saturates to bright white
+        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - lit_surface  * WHITE[ch]  * 1.20)
+        # 2. Leading-edge corona → cool-white accent
+        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - edge_surface * CORONA[ch] * 0.55)
+        # 3. Halo beyond strap
+        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - halo         * CORONA[ch] * 0.35)
 
     rgba = np.zeros((H, W, 4), dtype=np.float32)
     rgba[:, :, :3] = np.clip(out, 0.0, 1.0)
     rgba[:, :, 3]  = b_alpha
     frame = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
 
-    # ── Bloom: two-pass Gaussian, screen-blended back ─────────────────────────
-    g_combined   = np.clip(lit_surface * 0.75 + edge_surface * 0.90, 0.0, 1.0)
+    # ── Two-pass bloom (tight crisp + wide atmospheric) ───────────────────────
+    g_combined   = np.clip(lit_surface * 0.80 + edge_surface * 1.00, 0.0, 1.0)
     glow_arr     = np.zeros((H, W, 4), dtype=np.float32)
     for ch in range(3):
-        glow_arr[:, :, ch] = g_combined * EDGE_GLOW_C[ch]
+        glow_arr[:, :, ch] = g_combined * CORONA[ch]
     glow_arr[:, :, 3] = np.clip(g_combined * b_alpha, 0.0, 1.0)
 
-    glow_pil    = Image.fromarray((glow_arr * 255).astype(np.uint8), "RGBA")
-    bloom_tight = glow_pil.filter(ImageFilter.GaussianBlur(radius=12))
-    bloom_wide  = glow_pil.filter(ImageFilter.GaussianBlur(radius=30))
+    gp          = Image.fromarray((glow_arr * 255).astype(np.uint8), "RGBA")
+    bloom_tight = gp.filter(ImageFilter.GaussianBlur(radius=14))
+    bloom_wide  = gp.filter(ImageFilter.GaussianBlur(radius=36))
 
-    fa  = np.array(frame,       dtype=np.float32) / 255.0
-    bt  = np.array(bloom_tight, dtype=np.float32) / 255.0
-    bw  = np.array(bloom_wide,  dtype=np.float32) / 255.0
+    fa = np.array(frame,       dtype=np.float32) / 255.0
+    bt = np.array(bloom_tight, dtype=np.float32) / 255.0
+    bw = np.array(bloom_wide,  dtype=np.float32) / 255.0
 
     for ch in range(3):
-        fa[:, :, ch] = 1.0 - (1.0 - fa[:, :, ch]) * (1.0 - bt[:, :, ch] * 0.72)
-        fa[:, :, ch] = 1.0 - (1.0 - fa[:, :, ch]) * (1.0 - bw[:, :, ch] * 0.48)
+        fa[:, :, ch] = 1.0 - (1.0 - fa[:, :, ch]) * (1.0 - bt[:, :, ch] * 0.78)
+        fa[:, :, ch] = 1.0 - (1.0 - fa[:, :, ch]) * (1.0 - bw[:, :, ch] * 0.52)
     fa[:, :, 3] = b_alpha
 
     return Image.fromarray((np.clip(fa, 0.0, 1.0) * 255).astype(np.uint8), "RGBA")
@@ -173,7 +170,7 @@ def make_frame(progress: float) -> Image.Image:
 # ── Render ────────────────────────────────────────────────────────────────────
 frames = []
 for i in range(N_FRAMES):
-    p = i / N_FRAMES        # i/N (not i/(N−1)) → last frame is one step before loop point
+    p = i / N_FRAMES            # i/N → last frame is one step before loop point
     frames.append(make_frame(p))
     if i % 12 == 0:
         print(f"  frame {i+1}/{N_FRAMES}  ({p*100:.0f}%)")
