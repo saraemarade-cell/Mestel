@@ -41,26 +41,26 @@ pixel_angle = np.arctan2(ny, nx).astype(np.float32)   # -π … π
 ex = CX + RX * np.cos(pixel_angle)
 ey = CY + RY * np.sin(pixel_angle)
 dist_ellipse = np.sqrt((XX - ex) ** 2 + (YY - ey) ** 2).astype(np.float32)
-HALO_W = 36.0
+HALO_W = 48.0
 g_halo = np.exp(-dist_ellipse ** 2 / (2 * HALO_W ** 2)).astype(np.float32)
 
 # ── Animation settings ─────────────────────────────────────────────────────────
 FPS        = 24
-DURATION_S = 3.5
-N_FRAMES   = int(FPS * DURATION_S)   # 84 frames
+DURATION_S = 2.4              # faster revolution — more dynamic energy flow
+N_FRAMES   = int(FPS * DURATION_S)   # 57 frames
 FRAME_MS   = int(1000 / FPS)          # ~42 ms
 
 # Motion blur: average N_BLUR angular sub-steps per rendered frame.
-# blur_spread = fraction of one frame's angular step to smear over.
-N_BLUR     = 7
-STEP_ANGLE = (2 * math.pi) / N_FRAMES   # angular distance per frame
-blur_spread = STEP_ANGLE * 1.4           # smear over ~1.4 frame-steps
+# Wider spread at higher speed keeps the motion silky-smooth.
+N_BLUR     = 9
+STEP_ANGLE = (2 * math.pi) / N_FRAMES
+blur_spread = STEP_ANGLE * 1.6        # smear over ~1.6 frame-steps
 
 # Glow profile parameters
 # Tail: cosine ease over a fixed arc, then ZERO — no accumulation
-TAIL_ANGLE = math.pi * 0.55   # trailing arc = ~100°, rest of bracelet stays dark
-HEAD_SIGMA = 0.38             # Gaussian σ for the ignition front (radians)
-HEAD_BOOST = 2.2              # peak brightness at the leading edge
+TAIL_ANGLE = math.pi * 0.62   # ~112° arc — slightly longer for softer presence
+HEAD_SIGMA = 0.52             # wider Gaussian head — softer leading edge
+HEAD_BOOST = 1.8              # slightly lower peak — more diffused, less harsh
 
 # ── Colour palette (matches reference: white core → cyan-blue → deep blue) ───
 # Strap surface when lit: near-pure white with the faintest cool blue tint
@@ -163,9 +163,9 @@ def make_frame(progress: float) -> Image.Image:
 
     # Two radii: tight (crisp cyan edge) + wide (blue atmosphere)
     bloom_tight = Image.fromarray((glow_img_arr * 255).astype(np.uint8), "RGBA") \
-                       .filter(ImageFilter.GaussianBlur(radius=10))
+                       .filter(ImageFilter.GaussianBlur(radius=14))
     bloom_wide  = Image.fromarray((glow_img_arr * 255).astype(np.uint8), "RGBA") \
-                       .filter(ImageFilter.GaussianBlur(radius=28))
+                       .filter(ImageFilter.GaussianBlur(radius=36))
 
     frame_arr       = np.array(frame,       dtype=np.float32) / 255.0
     bloom_tight_arr = np.array(bloom_tight, dtype=np.float32) / 255.0
