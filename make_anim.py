@@ -48,9 +48,9 @@ pixel_angle = np.arctan2(ny, nx).astype(np.float32)
 # is_front: 1 for front face pixels (angle ∈ [0, π])
 is_front = (pixel_angle >= 0.0).astype(np.float32)
 
-# fill_pos ∈ [0, 1] along the front arc: 0 = left extreme, 1 = right extreme
-# (angle=π → left visible end → fill_pos=0; angle=0 → right visible end → fill_pos=1)
-fill_pos = (math.pi - pixel_angle) / math.pi   # ∈ [0,1] on front, ∈ [1,2] on back
+# fill_pos ∈ [0, 1] along the front arc: 0 = RIGHT extreme, 1 = LEFT extreme
+# Charge starts RIGHT → sweeps LEFT. Discharge: LEFT goes dark first → RIGHT last.
+fill_pos = pixel_angle / math.pi   # angle=0 (right)→0, angle=π (left)→1
 
 # Distance from ellipse centre-line (for the halo bloom that extends beyond strap)
 ex = CX + RX * np.cos(pixel_angle)
