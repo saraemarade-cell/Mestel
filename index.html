@@ -480,23 +480,6 @@
 
     .pin-tip.visible { opacity: 1; transform: none; }
 
-    .pin-tip__inner {
-      border: 1px solid rgba(255,255,255,.08); border-radius: 16px;
-      padding: 28px 28px 32px;
-      background: rgba(255,255,255,.03);
-      display: grid; grid-template-columns: 1fr; gap: 12px;
-    }
-
-    @media (min-width: 600px) {
-      .pin-tip__inner { grid-template-columns: auto 1fr; gap: 0 32px; align-items: start; }
-    }
-
-    .pin-tip__badge {
-      font-size: 10px; font-weight: 400; letter-spacing: .16em;
-      text-transform: uppercase; color: rgba(100,200,255,.4);
-      white-space: nowrap; padding-top: 4px;
-    }
-
     .pin-tip__title { font-size: 1.1rem; font-weight: 400; margin-bottom: 8px; }
 
     .pin-tip__desc {
@@ -795,12 +778,9 @@
   <div class="glow-divider"></div>
 
   <section class="pin-tip">
-    <div class="pin-tip__inner">
-      <span class="pin-tip__badge">Step 12</span>
-      <div>
-        <h3 class="pin-tip__title">Pagamenti che richiedono PIN</h3>
-        <p class="pin-tip__desc">Per i pagamenti che richiedono PIN, ordina la carta fisica Curve e utilizza il PIN associato.</p>
-      </div>
+    <div>
+      <h3 class="pin-tip__title">Pagamenti che richiedono PIN</h3>
+      <p class="pin-tip__desc">Per i pagamenti che richiedono PIN, ordina la carta fisica Curve e utilizza il PIN associato.</p>
     </div>
   </section>
 
