@@ -61,8 +61,15 @@ TAIL_DECAY = 3.8    # exponential rate — higher = shorter tail
 HEAD_SIGMA = 0.42   # Gaussian σ for the ignition front (radians)
 HEAD_BOOST = 2.0    # peak brightness multiplier at the front
 
-teal       = np.array([0.0, 0.898, 0.784], dtype=np.float32)
-white_core = np.array([0.85, 1.0,  0.97],  dtype=np.float32)
+# ── Colour palette (matches reference: white core → cyan-blue → deep blue) ───
+# Strap surface when lit: near-pure white with the faintest cool blue tint
+WHITE_SURF  = np.array([0.93, 0.97, 1.00], dtype=np.float32)
+# Ignition front: pure white-hot
+WHITE_HOT   = np.array([1.00, 1.00, 1.00], dtype=np.float32)
+# Inner corona just outside/around the strap: electric cyan-blue
+CYAN_CORONA = np.array([0.12, 0.80, 1.00], dtype=np.float32)   # #1FCCFF
+# Outer bloom atmosphere: deeper cool blue
+BLUE_BLOOM  = np.array([0.06, 0.52, 1.00], dtype=np.float32)   # #1085FF
 
 
 def glow_fields(band_center: float):
@@ -123,32 +130,48 @@ def make_frame(progress: float) -> Image.Image:
         0.0, 1.0
     ).astype(np.float32)
 
-    # ── Screen-blend teal + white-hot core ────────────────────────────────────
+    # ── Layer 1: strap surface → bright white (screen blend) ─────────────────
     out = b_rgb.copy()
     for ch in range(3):
-        contrib = glow_total * teal[ch] + halo_field * teal[ch] * 0.45
-        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - contrib)
-        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - head_bright * white_core[ch] * 0.55)
+        # Tail behind band: strap surface goes white-blue
+        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - tail_acc * WHITE_SURF[ch] * 1.1)
+        # Head front: strap surface goes pure white-hot
+        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - head_bright * WHITE_HOT[ch])
+
+    # ── Layer 2: cyan-blue corona at strap edges (halo field) ────────────────
+    for ch in range(3):
+        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - halo_field * CYAN_CORONA[ch] * 0.70)
 
     rgba = np.zeros((H, W, 4), dtype=np.float32)
     rgba[:, :, :3] = np.clip(out, 0.0, 1.0)
     rgba[:, :, 3]  = b_alpha
     frame = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
 
-    # ── Bloom: blur glow, screen-blend back ───────────────────────────────────
-    g_combined    = np.clip(glow_total + halo_field * 0.55, 0.0, 1.0)
-    glow_img_arr  = np.zeros((H, W, 4), dtype=np.float32)
+    # ── Layer 3: deep-blue atmospheric bloom (blurred, screen-blended back) ──
+    # Two bloom passes: tight cyan-blue + wide deep-blue atmosphere
+    g_combined   = np.clip(glow_total + halo_field * 0.6, 0.0, 1.0)
+    glow_img_arr = np.zeros((H, W, 4), dtype=np.float32)
     for ch in range(3):
-        glow_img_arr[:, :, ch] = g_combined * teal[ch]
+        # Blend between CYAN_CORONA (bright areas) and BLUE_BLOOM (faint areas)
+        glow_img_arr[:, :, ch] = (
+            glow_total * CYAN_CORONA[ch] * 0.6 +
+            halo_field * BLUE_BLOOM[ch]  * 0.8
+        )
     glow_img_arr[:, :, 3] = np.clip(g_combined * b_alpha, 0.0, 1.0)
 
-    bloom     = Image.fromarray((glow_img_arr * 255).astype(np.uint8), "RGBA") \
-                     .filter(ImageFilter.GaussianBlur(radius=18))
+    # Two radii: tight (crisp cyan edge) + wide (blue atmosphere)
+    bloom_tight = Image.fromarray((glow_img_arr * 255).astype(np.uint8), "RGBA") \
+                       .filter(ImageFilter.GaussianBlur(radius=10))
+    bloom_wide  = Image.fromarray((glow_img_arr * 255).astype(np.uint8), "RGBA") \
+                       .filter(ImageFilter.GaussianBlur(radius=28))
 
-    frame_arr = np.array(frame, dtype=np.float32) / 255.0
-    bloom_arr = np.array(bloom, dtype=np.float32) / 255.0
+    frame_arr       = np.array(frame,       dtype=np.float32) / 255.0
+    bloom_tight_arr = np.array(bloom_tight, dtype=np.float32) / 255.0
+    bloom_wide_arr  = np.array(bloom_wide,  dtype=np.float32) / 255.0
+
     for ch in range(3):
-        frame_arr[:, :, ch] = 1.0 - (1.0 - frame_arr[:, :, ch]) * (1.0 - bloom_arr[:, :, ch] * 0.72)
+        frame_arr[:, :, ch] = 1.0 - (1.0 - frame_arr[:, :, ch]) * (1.0 - bloom_tight_arr[:, :, ch] * 0.75)
+        frame_arr[:, :, ch] = 1.0 - (1.0 - frame_arr[:, :, ch]) * (1.0 - bloom_wide_arr[:, :, ch]  * 0.55)
     frame_arr[:, :, 3] = b_alpha
 
     return Image.fromarray((np.clip(frame_arr, 0.0, 1.0) * 255).astype(np.uint8), "RGBA")
