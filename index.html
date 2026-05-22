@@ -469,6 +469,15 @@
     .done__logo svg path,
     .done__logo svg polygon { fill: #ffffff !important; stroke: none !important; }
 
+    .done__bracelet {
+      margin: 32px auto 0;
+      width: clamp(120px, 30vw, 180px);
+      display: block;
+    }
+    .done__bracelet img {
+      width: 100%; height: auto; display: block;
+    }
+
     /* ══════════════════════════════════════════
        PIN TIP
     ══════════════════════════════════════════ */
@@ -754,7 +763,7 @@
       <p class="done__label">Step 11 — Completato</p>
       <h2 class="done__title">Fatto.</h2>
       <p class="done__sub">Il tuo Novalink è pronto. Avvicina il polso al POS contactless e paga.</p>
-      <div class="done__logo">
+      <div class="done__logo" style="margin-bottom:0;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 293.97 153.11">
           <g fill="#fff">
             <polygon points="154.12 49.59 104.53 0 104.53 79.35 119.41 79.35 119.41 34.71 144.2 59.51 154.12 49.59"/>
@@ -771,6 +780,9 @@
             <path d="M259.77,104.15h8.96v40.69h25.24v7.59h-34.21v-48.28Z"/>
           </g>
         </svg>
+      </div>
+      <div class="done__bracelet">
+        <img src="bracelet-animated.png" alt="Novalink">
       </div>
     </div>
   </section>
