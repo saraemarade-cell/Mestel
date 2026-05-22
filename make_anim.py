@@ -1,78 +1,105 @@
+"""
+Bracelet light band — continuous smooth approach.
+For each pixel we compute:
+  1. Its angular position projected onto the ellipse  → angle
+  2. Its distance from the ellipse surface            → radial falloff (Gaussian)
+  3. Whether it falls inside the moving band window   → angular intensity
+No discrete dots; the glow is a single continuous mathematical field.
+"""
 from PIL import Image
 import numpy as np
 import math
 
+# ── Load & resize ────────────────────────────────────────────────────────────
 src = Image.open("Bracciale senza sfondo.png").convert("RGBA")
-
 MAX_W = 600
 if src.width > MAX_W:
-    ratio = MAX_W / src.width
-    src = src.resize((MAX_W, int(src.height * ratio)), Image.LANCZOS)
+    r = MAX_W / src.width
+    src = src.resize((MAX_W, int(src.height * r)), Image.LANCZOS)
 
 W, H = src.size
-print(f"Working size: {W}x{H}")
+print(f"Size: {W}×{H}")
 
 bracelet_arr   = np.array(src, dtype=np.float32)
-bracelet_alpha = bracelet_arr[:, :, 3] / 255.0
+bracelet_alpha = bracelet_arr[:, :, 3] / 255.0          # 0-1 mask
 
-# Ellipse path along the bracelet
-CX = W * 0.50
-CY = H * 0.50
-RX = W * 0.40
-RY = H * 0.20
+# ── Ellipse parameters ────────────────────────────────────────────────────────
+CX, CY = W * 0.50, H * 0.50
+RX, RY = W * 0.40, H * 0.20
 
-N_FRAMES  = 60
-FRAME_MS  = 67          # 60 × 67ms ≈ 4s loop
-GLOW_R    = int(W * 0.08)
-
-# Pre-compute meshgrid once
+# ── Pre-compute per-pixel ellipse geometry (done ONCE) ───────────────────────
 xs = np.arange(W, dtype=np.float32)
 ys = np.arange(H, dtype=np.float32)
 XX, YY = np.meshgrid(xs, ys)
 
+nx = (XX - CX) / RX                     # normalised x  (-1…+1 on ellipse)
+ny = (YY - CY) / RY                     # normalised y
+
+pixel_angle = np.arctan2(ny, nx)        # angle of projection onto ellipse
+
+# Closest point on ellipse at that angle
+ex = CX + RX * np.cos(pixel_angle)
+ey = CY + RY * np.sin(pixel_angle)
+
+# Euclidean distance from ellipse surface (pixels)
+dist_from_ellipse = np.sqrt((XX - ex) ** 2 + (YY - ey) ** 2)
+
+# ── Animation parameters ──────────────────────────────────────────────────────
+N_FRAMES   = 60
+FRAME_MS   = 67          # 60 × 67 ms ≈ 4 s
+
+TAIL_SPAN  = 1.6         # radians of tail behind head (~92°)
+HEAD_SPAN  = 0.10        # small forward glow
+
+BAND_W_PX  = 14.0        # half-width of light band in pixels (Gaussian sigma)
+CORE_W_PX  = 6.0         # tighter bright core
+
+# Radial Gaussians (precomputed)
+radial_outer = np.exp(-dist_from_ellipse ** 2 / (2 * BAND_W_PX ** 2))
+radial_core  = np.exp(-dist_from_ellipse ** 2 / (2 * CORE_W_PX ** 2))
+
 def make_frame(progress):
-    angle = progress * 2 * math.pi - math.pi / 2
+    band_center = progress * 2 * math.pi - math.pi / 2
 
-    glow = np.zeros((H, W, 4), dtype=np.float32)
+    # Angular distance from band center, wrapped to (-π, π)
+    d_angle = pixel_angle - band_center
+    d_angle = (d_angle + math.pi) % (2 * math.pi) - math.pi
 
-    # Continuous scia: dense trail covering ~1/3 of the ellipse
-    TRAIL_STEPS = 28
-    TRAIL_SPAN  = 1.8   # radians (roughly 100° of the ellipse lit up)
+    # --- Angular intensity: 1 at head, smooth fade toward tail, 0 outside ---
+    in_band = (d_angle >= -TAIL_SPAN) & (d_angle <= HEAD_SPAN)
 
-    for t in range(TRAIL_STEPS, -1, -1):
-        frac  = t / TRAIL_STEPS          # 1 = head, 0 = tail end
-        a     = angle - (1.0 - frac) * TRAIL_SPAN
-        px    = CX + RX * math.cos(a)
-        py    = CY + RY * math.sin(a)
+    # Position within band: 0 = tail end, 1 = head
+    band_pos = np.clip(
+        (d_angle + TAIL_SPAN) / (TAIL_SPAN + HEAD_SPAN), 0, 1
+    )
+    angular = np.where(in_band, band_pos ** 1.4, 0.0)   # smooth ramp
 
-        # Intensity curve: bright at head, smooth fade toward tail
-        intensity = frac ** 1.2
-        size      = max(3, int(GLOW_R * (0.4 + 0.6 * frac)))
+    # --- Combine angular × radial → continuous field ---
+    field_outer = angular * radial_outer   # soft halo
+    field_core  = angular * radial_core   # bright core
 
-        dist = np.sqrt((XX - px) ** 2 + (YY - py) ** 2)
+    # Clip to bracelet shape
+    field_outer *= bracelet_alpha
+    field_core  *= bracelet_alpha
 
-        outer = np.clip(1.0 - dist / (size * 2.5), 0, 1) ** 2.0 * intensity * 0.4
-        core  = np.clip(1.0 - dist / size,          0, 1) ** 1.5 * intensity
-
-        glow[:, :, 0] += core * 0.55 + outer * 0.15
-        glow[:, :, 1] += core * 1.00 + outer * 0.80
-        glow[:, :, 2] += core * 0.92 + outer * 0.75
-        glow[:, :, 3] += core * 1.00 + outer * 0.45
-
-    glow = np.clip(glow, 0, 1)
-    # Mask strictly to bracelet alpha
-    glow[:, :, 3] *= bracelet_alpha
-
+    # --- Compose over bracelet image ---
     out = bracelet_arr.copy() / 255.0
-    # Screen blend
-    out[:, :, 0] = 1.0 - (1.0 - out[:, :, 0]) * (1.0 - glow[:, :, 0])
-    out[:, :, 1] = 1.0 - (1.0 - out[:, :, 1]) * (1.0 - glow[:, :, 1])
-    out[:, :, 2] = 1.0 - (1.0 - out[:, :, 2]) * (1.0 - glow[:, :, 2])
-    out[:, :, 3] = bracelet_alpha
 
+    # Teal: R≈0  G≈0.9  B≈0.78  (normalised from #00E5C8)
+    for ch, (o_mult, c_mult) in enumerate(
+        [(0.30, 0.55), (0.85, 1.00), (0.75, 0.92), (0.50, 1.00)]
+    ):
+        contrib = field_outer * o_mult + field_core * c_mult
+        if ch < 3:
+            # Screen blend for colour channels
+            out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - contrib)
+        # Alpha stays bracelet_alpha
+
+    out[:, :, 3] = bracelet_alpha
     return Image.fromarray((np.clip(out, 0, 1) * 255).astype(np.uint8), "RGBA")
 
 
+# ── Render ────────────────────────────────────────────────────────────────────
 frames = []
 for i in range(N_FRAMES):
     frames.append(make_frame(i / N_FRAMES))
@@ -87,4 +114,4 @@ frames[0].save(
     duration=FRAME_MS,
     format="PNG",
 )
-print(f"Done: {N_FRAMES} frames × {FRAME_MS}ms — {W}x{H}px")
+print(f"Saved — {N_FRAMES} frames × {FRAME_MS} ms — {W}×{H} px")
