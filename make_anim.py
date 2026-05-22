@@ -45,10 +45,11 @@ ny = (YY - CY) / RY
 pixel_angle = np.arctan2(ny, nx).astype(np.float32)
 
 # ── Full-circle parameterisation ─────────────────────────────────────────────
-# Fill wraps the ENTIRE bracelet starting from the right side (angle=0),
-# going clockwise: right → bottom-front → left → top-back → right.
-# fill_pos ∈ [0,1]: 0=right, 0.25=bottom, 0.5=left, 0.75=top, 1.0=full circle
-pixel_angle_wrapped = (pixel_angle % (2.0 * math.pi)).astype(np.float32)
+# Fill starts at the TOP-RIGHT of the bracelet (angle ≈ −π/4 in image coords)
+# and sweeps clockwise: top-right → right → front-bottom → left → top → top-right.
+# fill_pos ∈ [0,1]: 0 = top-right (gap/seam), 1 = full circle back to top-right.
+START_ANGLE = -math.pi * 0.28          # top-right starting point (~50° above horizontal)
+pixel_angle_wrapped = ((pixel_angle - START_ANGLE) % (2.0 * math.pi)).astype(np.float32)
 fill_pos = (pixel_angle_wrapped / (2.0 * math.pi)).astype(np.float32)
 
 # Distance from ellipse centre-line (for the halo bloom that extends beyond strap)
@@ -71,9 +72,12 @@ BLUR_HALF = (1.0 / N_FRAMES) * 0.75   # smear ±0.75 frame-steps
 # Soft edge width as fraction of total arc
 EDGE_W = 0.16
 
-# Colours
-WHITE  = np.array([1.00, 1.00, 1.00], dtype=np.float32)
-CORONA = np.array([0.82, 0.95, 1.00], dtype=np.float32)  # very light cool-white
+# Colours — soft diffused glow, not stark white
+LIT    = np.array([0.90, 0.96, 1.00], dtype=np.float32)  # cool-white tint on lit surface
+CORONA = np.array([0.70, 0.88, 1.00], dtype=np.float32)  # cyan-white for edge & bloom
+LIT_STRENGTH  = 0.68   # keeps bracelet texture visible through the glow
+EDGE_STRENGTH = 0.50
+HALO_STRENGTH = 0.40
 
 
 # ── Core fill function ────────────────────────────────────────────────────────
@@ -130,12 +134,12 @@ def make_frame(progress: float) -> Image.Image:
     # ── Screen-blend layers onto the bracelet surface ─────────────────────────
     out = b_rgb.copy()
     for ch in range(3):
-        # 1. Lit region → saturates to bright white
-        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - lit_surface  * WHITE[ch]  * 1.20)
-        # 2. Leading-edge corona → cool-white accent
-        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - edge_surface * CORONA[ch] * 0.55)
-        # 3. Halo beyond strap
-        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - halo         * CORONA[ch] * 0.35)
+        # 1. Lit surface — soft diffused glow, bracelet texture still visible
+        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - lit_surface  * LIT[ch]    * LIT_STRENGTH)
+        # 2. Leading-edge corona — brighter cyan-white highlight at the boundary
+        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - edge_surface * CORONA[ch] * EDGE_STRENGTH)
+        # 3. Soft halo beyond strap
+        out[:, :, ch] = 1.0 - (1.0 - out[:, :, ch]) * (1.0 - halo         * CORONA[ch] * HALO_STRENGTH)
 
     rgba = np.zeros((H, W, 4), dtype=np.float32)
     rgba[:, :, :3] = np.clip(out, 0.0, 1.0)
@@ -158,8 +162,8 @@ def make_frame(progress: float) -> Image.Image:
     bw = np.array(bloom_wide,  dtype=np.float32) / 255.0
 
     for ch in range(3):
-        fa[:, :, ch] = 1.0 - (1.0 - fa[:, :, ch]) * (1.0 - bt[:, :, ch] * 0.78)
-        fa[:, :, ch] = 1.0 - (1.0 - fa[:, :, ch]) * (1.0 - bw[:, :, ch] * 0.52)
+        fa[:, :, ch] = 1.0 - (1.0 - fa[:, :, ch]) * (1.0 - bt[:, :, ch] * 0.60)
+        fa[:, :, ch] = 1.0 - (1.0 - fa[:, :, ch]) * (1.0 - bw[:, :, ch] * 0.38)
     fa[:, :, 3] = b_alpha
 
     return Image.fromarray((np.clip(fa, 0.0, 1.0) * 255).astype(np.uint8), "RGBA")
