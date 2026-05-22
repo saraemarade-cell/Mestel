@@ -554,6 +554,68 @@
       transform: translate(-50%, -50%);
       z-index: 0; transition: left .15s ease, top .15s ease;
     }
+
+    /* ══════════════════════════════════════════
+       MOBILE  (< 700 px)
+    ══════════════════════════════════════════ */
+    @media (max-width: 699px) {
+
+      /* ── Hero ── */
+      .hero__logo-wrap { margin-bottom: 28px; }
+      #mestel-logo { width: clamp(100px, 42vw, 150px); }
+      .hero__video-wrap { width: clamp(200px, 80vw, 300px); }
+      .hero__scroll { bottom: 20px; }
+
+      /* ── Intro ── */
+      .intro { padding: 48px 20px 40px; }
+      .intro__title { font-size: clamp(1.6rem, 7vw, 2.4rem); }
+      .intro__pills { gap: 8px; }
+      .intro__pill { font-size: .78rem; padding: 6px 14px; }
+
+      /* ── Steps label ── */
+      .steps-label { padding: 0 20px; margin-bottom: 24px; }
+
+      /* ── Step cards: video sopra, testo sotto ── */
+      .step { padding: 0 16px 40px; }
+
+      .step__inner {
+        flex-direction: column;   /* video in cima, testo in fondo */
+        border-radius: 16px;
+      }
+
+      /* Video: larghezza piena, altezza ridotta per non occupare tutto lo schermo */
+      .step__video {
+        width: 100%;
+        aspect-ratio: 9/16;
+        max-height: 60svh;        /* mai più alto del 60% dello schermo */
+      }
+
+      /* Separatore orizzontale sotto il video (invece di verticale) */
+      .step__video::after {
+        bottom: 0; right: 0; top: auto; left: 0;
+        width: 100%; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.3) 50%, transparent);
+      }
+
+      /* Testo: padding più compatto */
+      .step__text { padding: 20px 20px 24px; }
+
+      .step__title { font-size: clamp(1.2rem, 5vw, 1.6rem); }
+      .step__desc  { font-size: .88rem; }
+
+      /* ── Done section ── */
+      .done { padding: 60px 20px; }
+      .done__title { font-size: clamp(2.6rem, 12vw, 5rem); }
+      .done__sub   { font-size: .88rem; }
+      .done__logo  { width: clamp(80px, 28vw, 120px); }
+      .done__bracelet { width: clamp(130px, 50vw, 180px); }
+
+      /* ── Pin tip ── */
+      .pin-tip { padding: 48px 20px; }
+
+      /* Nascondi il cursore glow su touch (non serve) */
+      #cursor-glow { display: none; }
+    }
   </style>
 </head>
 <body>
