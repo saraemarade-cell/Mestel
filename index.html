@@ -412,8 +412,12 @@
 
     .done.visible { opacity: 1; transform: none; }
 
+    .done__band-wrap {
+      position: relative; margin: 20px 0; height: 1px; overflow: visible;
+    }
+
     .done__band {
-      position: absolute; left: -10%; width: 120%; height: 1px; top: 50%;
+      position: absolute; left: -10%; width: 120%; height: 1px; top: 0;
       background: linear-gradient(90deg,
         transparent 0%,
         rgba(255,255,255,.04) 10%,
@@ -752,8 +756,6 @@
        DONE
   ════════════════════════════════════════════ -->
   <section class="done">
-    <div class="done__band"></div>
-    <div class="done__band-glow"></div>
     <div class="done__content">
       <div class="done__check">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--nfc)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -762,6 +764,10 @@
       </div>
       <p class="done__label">Step 11 — Completato</p>
       <h2 class="done__title">Fatto.</h2>
+      <div class="done__band-wrap">
+        <div class="done__band"></div>
+        <div class="done__band-glow"></div>
+      </div>
       <p class="done__sub">Il tuo Novalink è pronto. Avvicina il polso al POS contactless e paga.</p>
       <div class="done__logo" style="margin-bottom:0;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 293.97 153.11">
