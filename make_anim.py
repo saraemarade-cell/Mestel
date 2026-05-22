@@ -57,9 +57,10 @@ STEP_ANGLE = (2 * math.pi) / N_FRAMES   # angular distance per frame
 blur_spread = STEP_ANGLE * 1.4           # smear over ~1.4 frame-steps
 
 # Glow profile parameters
-TAIL_DECAY = 3.8    # exponential rate — higher = shorter tail
-HEAD_SIGMA = 0.42   # Gaussian σ for the ignition front (radians)
-HEAD_BOOST = 2.0    # peak brightness multiplier at the front
+# Tail: cosine ease over a fixed arc, then ZERO — no accumulation
+TAIL_ANGLE = math.pi * 0.55   # trailing arc = ~100°, rest of bracelet stays dark
+HEAD_SIGMA = 0.38             # Gaussian σ for the ignition front (radians)
+HEAD_BOOST = 2.2              # peak brightness at the leading edge
 
 # ── Colour palette (matches reference: white core → cyan-blue → deep blue) ───
 # Strap surface when lit: near-pure white with the faintest cool blue tint
@@ -82,13 +83,14 @@ def glow_fields(band_center: float):
     # Angular distance behind the head for every pixel (0 = just passed)
     d_behind = ((band_center - pixel_angle) % TWO_PI).astype(np.float32)
 
-    # ── Tail: exponential decay, perfectly smooth, no hard cutoff ────────────
-    tail = np.exp(-TAIL_DECAY * d_behind / TWO_PI).astype(np.float32)
-
-    # Smoothly kill the thin slice of pixels that are just AHEAD of the head
-    # (d_behind ≈ 2π means "about to be reached"). Fade out over 0.35 rad.
-    ahead_fade = np.clip((TWO_PI - d_behind) / 0.35, 0.0, 1.0).astype(np.float32)
-    tail *= ahead_fade
+    # ── Tail: cosine ease from 1→0 over TAIL_ANGLE, then hard zero ──────────
+    # This gives a single finite arc of light — no accumulation anywhere.
+    # cos ease: smooth derivative at both ends, reaches exactly 0 at TAIL_ANGLE.
+    tail = np.where(
+        d_behind < TAIL_ANGLE,
+        (0.5 * (1.0 + np.cos(math.pi * d_behind / TAIL_ANGLE))).astype(np.float32),
+        0.0
+    ).astype(np.float32)
 
     # ── Head: Gaussian angular profile — smooth bell curve ───────────────────
     ang_dist = np.abs(
