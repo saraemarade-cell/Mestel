@@ -12,8 +12,8 @@
     :root {
       --black: #03080a;
       --white: #ffffff;
-      --nfc: #00E5C8;
-      --nfc-soft: rgba(0,229,200,0.15);
+      --nfc: #64C8FF;
+      --nfc-soft: rgba(100,200,255,0.12);
       --grey: rgba(255,255,255,0.4);
       --font: 'DM Sans', sans-serif;
     }
@@ -34,8 +34,8 @@
       top: 0; left: 0;
       height: 2px;
       width: 0%;
-      background: var(--nfc);
-      box-shadow: 0 0 10px 2px rgba(0,229,200,.5);
+      background: linear-gradient(90deg, rgba(100,200,255,.8), rgba(220,240,255,1));
+      box-shadow: 0 0 10px 3px rgba(150,210,255,.4), 0 0 4px 1px rgba(255,255,255,.3);
       z-index: 100;
       transition: width .1s linear;
     }
@@ -93,7 +93,7 @@
       height: 10px;
       border-radius: 50%;
       background: var(--nfc);
-      box-shadow: 0 0 6px rgba(0,229,200,.8);
+      box-shadow: 0 0 6px rgba(100,200,255,.8);
       position: relative;
       z-index: 2;
     }
@@ -114,7 +114,7 @@
       top: 50%; left: 50%;
       width: 10px; height: 10px;
       border-radius: 50%;
-      background: rgba(0,229,200,0.5);
+      background: rgba(100,200,255,0.5);
       transform: translate(-50%,-50%) scale(1);
       opacity: 0;
       pointer-events: none;
@@ -175,7 +175,7 @@
 
     .hero__scroll-line {
       width: 1px; height: 36px;
-      background: linear-gradient(to bottom, rgba(0,229,200,.5), transparent);
+      background: linear-gradient(to bottom, rgba(200,230,255,.45), transparent);
       animation: scrollPulse 2s ease-in-out infinite 4s;
     }
 
@@ -196,8 +196,8 @@
       content: '';
       position: absolute;
       left: 5%; width: 90%; top: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,229,200,.12) 20%, rgba(0,229,200,.35) 50%, rgba(0,229,200,.12) 80%, transparent);
-      box-shadow: 0 0 10px 2px rgba(0,229,200,.1);
+      background: linear-gradient(90deg, transparent, rgba(100,200,255,.12) 20%, rgba(100,200,255,.35) 50%, rgba(100,200,255,.12) 80%, transparent);
+      box-shadow: 0 0 10px 2px rgba(100,200,255,.1);
     }
 
     /* ══════════════════════════════════════════
@@ -243,10 +243,10 @@
     .intro__pill {
       font-size: 11px; font-weight: 400; letter-spacing: .08em;
       padding: 8px 16px;
-      border: 1px solid rgba(0,229,200,.15);
+      border: 1px solid rgba(100,200,255,.15);
       border-radius: 100px;
-      color: rgba(0,229,200,.6);
-      background: rgba(0,229,200,.04);
+      color: rgba(100,200,255,.6);
+      background: rgba(100,200,255,.04);
     }
 
     /* ══════════════════════════════════════════
@@ -289,16 +289,16 @@
     }
 
     .step__inner:hover {
-      border-color: rgba(0,229,200,.2);
-      box-shadow: 0 0 40px rgba(0,229,200,.04), inset 0 0 40px rgba(0,229,200,.02);
+      border-color: rgba(100,200,255,.2);
+      box-shadow: 0 0 40px rgba(100,200,255,.04), inset 0 0 40px rgba(100,200,255,.02);
     }
 
     .step__inner::before {
       content: '';
       position: absolute;
       left: 0; top: 20%; bottom: 20%; width: 1px;
-      background: linear-gradient(to bottom, transparent, rgba(0,229,200,.5), transparent);
-      box-shadow: 0 0 8px 2px rgba(0,229,200,.2);
+      background: linear-gradient(to bottom, transparent, rgba(100,200,255,.5), transparent);
+      box-shadow: 0 0 8px 2px rgba(100,200,255,.2);
       opacity: 0; transition: opacity .4s ease;
     }
 
@@ -327,15 +327,15 @@
     .step__video::after {
       content: '';
       position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,229,200,.3) 50%, transparent);
-      box-shadow: 0 0 10px 2px rgba(0,229,200,.15);
+      background: linear-gradient(90deg, transparent, rgba(100,200,255,.3) 50%, transparent);
+      box-shadow: 0 0 10px 2px rgba(100,200,255,.15);
     }
 
     @media (min-width: 700px) {
       .step__video::after {
         bottom: auto; right: 0; top: 10%; bottom: 10%;
         left: auto; width: 1px; height: auto;
-        background: linear-gradient(to bottom, transparent, rgba(0,229,200,.3) 50%, transparent);
+        background: linear-gradient(to bottom, transparent, rgba(100,200,255,.3) 50%, transparent);
       }
     }
 
@@ -354,7 +354,7 @@
 
     .step__number {
       font-size: 10px; font-weight: 400; letter-spacing: .2em;
-      text-transform: uppercase; color: rgba(0,229,200,.5); white-space: nowrap;
+      text-transform: uppercase; color: rgba(100,200,255,.5); white-space: nowrap;
     }
 
     .step__meta-line { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
@@ -388,15 +388,25 @@
 
     .done__band {
       position: absolute; left: -10%; width: 120%; height: 1px; top: 50%;
-      background: linear-gradient(90deg, transparent 0%, rgba(0,229,200,.05) 10%, rgba(0,229,200,.9) 40%, var(--nfc) 50%, rgba(0,229,200,.9) 60%, rgba(0,229,200,.05) 90%, transparent 100%);
-      box-shadow: 0 0 8px 3px rgba(0,229,200,.5), 0 0 40px 12px rgba(0,229,200,.2), 0 0 100px 30px rgba(0,229,200,.07);
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(100,200,255,.04) 10%,
+        rgba(180,228,255,.7) 35%,
+        rgba(255,255,255,.95) 50%,
+        rgba(180,228,255,.7) 65%,
+        rgba(100,200,255,.04) 90%,
+        transparent 100%);
+      box-shadow:
+        0 0 6px 2px rgba(255,255,255,.6),
+        0 0 20px 6px rgba(100,200,255,.35),
+        0 0 80px 24px rgba(80,170,255,.12);
       pointer-events: none;
     }
 
     .done__band-glow {
       position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
       height: 400px;
-      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,229,200,.06) 0%, transparent 100%);
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(100,200,255,.05) 0%, transparent 100%);
       pointer-events: none;
     }
 
@@ -404,17 +414,17 @@
 
     .done__check {
       width: 48px; height: 48px;
-      border: 1px solid rgba(0,229,200,.3); border-radius: 50%;
+      border: 1px solid rgba(200,235,255,.35); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       margin: 0 auto 28px;
-      box-shadow: 0 0 20px rgba(0,229,200,.15);
+      box-shadow: 0 0 16px rgba(100,200,255,.18), 0 0 4px rgba(255,255,255,.1);
     }
 
     .done__check svg { width: 18px; height: 18px; }
 
     .done__label {
       font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-      color: rgba(0,229,200,.5); margin-bottom: 16px;
+      color: rgba(100,200,255,.5); margin-bottom: 16px;
     }
 
     .done__title {
@@ -455,7 +465,7 @@
 
     .pin-tip__badge {
       font-size: 10px; font-weight: 400; letter-spacing: .16em;
-      text-transform: uppercase; color: rgba(0,229,200,.4);
+      text-transform: uppercase; color: rgba(100,200,255,.4);
       white-space: nowrap; padding-top: 4px;
     }
 
@@ -478,7 +488,7 @@
     #cursor-glow {
       position: fixed; pointer-events: none;
       width: 280px; height: 280px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(0,229,200,.04) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(100,200,255,.04) 0%, transparent 70%);
       transform: translate(-50%, -50%);
       z-index: 0; transition: left .15s ease, top .15s ease;
     }
