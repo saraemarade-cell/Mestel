@@ -105,9 +105,9 @@ def make_frame(progress):
     # --- Moving band at the head ---
     # HEAD: the bright ignition front
     # Tight angular window around band_center
-    HEAD_HALF = 0.18    # radians
+    HEAD_HALF = 0.32    # radians — wide enough to fill a visible strap segment
     ang_dist_from_head = np.abs(((pixel_angle - band_center) + math.pi) % (2*math.pi) - math.pi)
-    head_angular = np.clip(1.0 - ang_dist_from_head / HEAD_HALF, 0, 1) ** 1.2
+    head_angular = np.clip(1.0 - ang_dist_from_head / HEAD_HALF, 0, 1) ** 0.8
 
     # ── 3. Compose layers ─────────────────────────────────────────────────────
     # Layer A: dimmed matte bracelet
@@ -118,13 +118,12 @@ def make_frame(progress):
     # A — base bracelet (slightly darkened when activated around it)
     base = b_rgb.copy()
 
-    # B — surface activation glow (teal tint over the bracelet)
-    act_field    = activated * g_band         # spread to band-width
-    act_field   *= b_alpha
+    # B — surface activation glow fills the FULL strap shape (b_alpha is the mask)
+    act_field = activated * b_alpha
 
-    # C — ignition head (very bright)
+    # C — ignition head: full strap width at current angle, very bright
     if sweep_t > 0:
-        head_field = head_angular * g_core * b_alpha * 1.8
+        head_field = head_angular * b_alpha * 1.8
     else:
         head_field = np.zeros((H, W), dtype=np.float32)
 
