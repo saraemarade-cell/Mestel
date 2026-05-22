@@ -12,8 +12,8 @@
     :root {
       --black: #03080a;
       --white: #ffffff;
-      --nfc: #64C8FF;
-      --nfc-soft: rgba(100,200,255,0.12);
+      --nfc: #ffffff;
+      --nfc-soft: rgba(255,255,255,0.10);
       --grey: rgba(255,255,255,0.4);
       --font: 'DM Sans', sans-serif;
     }
@@ -34,8 +34,8 @@
       top: 0; left: 0;
       height: 2px;
       width: 0%;
-      background: linear-gradient(90deg, rgba(100,200,255,.8), rgba(220,240,255,1));
-      box-shadow: 0 0 10px 3px rgba(150,210,255,.4), 0 0 4px 1px rgba(255,255,255,.3);
+      background: linear-gradient(90deg, rgba(255,255,255,.8), rgba(255,255,255,1));
+      box-shadow: 0 0 10px 3px rgba(255,255,255,.4), 0 0 4px 1px rgba(255,255,255,.3);
       z-index: 100;
       transition: width .1s linear;
     }
@@ -60,7 +60,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 65% 50% at 50% 58%, rgba(60,150,255,.055) 0%, transparent 70%);
+      background: radial-gradient(ellipse 65% 50% at 50% 58%, rgba(255,255,255,.055) 0%, transparent 70%);
       animation: heroBreathe 8s ease-in-out infinite;
       pointer-events: none;
       z-index: 0;
@@ -104,7 +104,7 @@
       height: 10px;
       border-radius: 50%;
       background: var(--nfc);
-      box-shadow: 0 0 6px rgba(100,200,255,.8);
+      box-shadow: 0 0 6px rgba(255,255,255,.8);
       position: relative;
       z-index: 2;
     }
@@ -125,7 +125,7 @@
       top: 50%; left: 50%;
       width: 10px; height: 10px;
       border-radius: 50%;
-      background: rgba(100,200,255,0.5);
+      background: rgba(255,255,255,0.5);
       transform: translate(-50%,-50%) scale(1);
       opacity: 0;
       pointer-events: none;
@@ -186,7 +186,7 @@
 
     .hero__scroll-line {
       width: 1px; height: 36px;
-      background: linear-gradient(to bottom, rgba(200,230,255,.45), transparent);
+      background: linear-gradient(to bottom, rgba(255,255,255,.45), transparent);
       transform-origin: top center;
       animation: scrollPulse 2.5s ease-in-out infinite 4s;
     }
@@ -208,8 +208,8 @@
       content: '';
       position: absolute;
       left: 5%; width: 90%; top: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(150,215,255,.14) 20%, rgba(200,235,255,.40) 50%, rgba(150,215,255,.14) 80%, transparent);
-      box-shadow: 0 0 10px 2px rgba(100,200,255,.10);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.14) 20%, rgba(255,255,255,.40) 50%, rgba(255,255,255,.14) 80%, transparent);
+      box-shadow: 0 0 10px 2px rgba(255,255,255,.10);
       animation: dividerPulse 5s ease-in-out infinite;
     }
 
@@ -256,10 +256,10 @@
     .intro__pill {
       font-size: 11px; font-weight: 400; letter-spacing: .08em;
       padding: 8px 16px;
-      border: 1px solid rgba(100,200,255,.15);
+      border: 1px solid rgba(255,255,255,.15);
       border-radius: 100px;
-      color: rgba(160,220,255,.65);
-      background: rgba(100,200,255,.04);
+      color: rgba(255,255,255,.65);
+      background: rgba(255,255,255,.04);
       animation: pillBreath 5s ease-in-out infinite;
     }
     .intro__pill:nth-child(2) { animation-delay: -1.25s; }
@@ -310,16 +310,16 @@
     .step:nth-child(even) .step__inner::before { animation-delay: -1.0s; }
 
     .step__inner:hover {
-      border-color: rgba(100,200,255,.2);
-      box-shadow: 0 0 40px rgba(100,200,255,.04), inset 0 0 40px rgba(100,200,255,.02);
+      border-color: rgba(255,255,255,.2);
+      box-shadow: 0 0 40px rgba(255,255,255,.04), inset 0 0 40px rgba(255,255,255,.02);
     }
 
     .step__inner::before {
       content: '';
       position: absolute;
       left: 0; top: 20%; bottom: 20%; width: 1px;
-      background: linear-gradient(to bottom, transparent, rgba(180,228,255,.6), transparent);
-      box-shadow: 0 0 8px 2px rgba(100,200,255,.2);
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,.6), transparent);
+      box-shadow: 0 0 8px 2px rgba(255,255,255,.2);
       opacity: 0; transition: opacity .5s ease;
     }
 
@@ -353,15 +353,15 @@
     .step__video::after {
       content: '';
       position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(100,200,255,.3) 50%, transparent);
-      box-shadow: 0 0 10px 2px rgba(100,200,255,.15);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.3) 50%, transparent);
+      box-shadow: 0 0 10px 2px rgba(255,255,255,.15);
     }
 
     @media (min-width: 700px) {
       .step__video::after {
         bottom: auto; right: 0; top: 10%; bottom: 10%;
         left: auto; width: 1px; height: auto;
-        background: linear-gradient(to bottom, transparent, rgba(100,200,255,.3) 50%, transparent);
+        background: linear-gradient(to bottom, transparent, rgba(255,255,255,.3) 50%, transparent);
       }
     }
 
@@ -380,7 +380,7 @@
 
     .step__number {
       font-size: 10px; font-weight: 400; letter-spacing: .2em;
-      text-transform: uppercase; color: rgba(100,200,255,.5); white-space: nowrap;
+      text-transform: uppercase; color: rgba(255,255,255,.5); white-space: nowrap;
     }
 
     .step__meta-line { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
@@ -416,16 +416,16 @@
       position: absolute; left: -10%; width: 120%; height: 1px; top: 50%;
       background: linear-gradient(90deg,
         transparent 0%,
-        rgba(100,200,255,.04) 10%,
-        rgba(180,228,255,.7) 35%,
+        rgba(255,255,255,.04) 10%,
+        rgba(255,255,255,.7) 35%,
         rgba(255,255,255,.95) 50%,
-        rgba(180,228,255,.7) 65%,
-        rgba(100,200,255,.04) 90%,
+        rgba(255,255,255,.7) 65%,
+        rgba(255,255,255,.04) 90%,
         transparent 100%);
       box-shadow:
         0 0 6px 2px rgba(255,255,255,.6),
-        0 0 20px 6px rgba(100,200,255,.35),
-        0 0 80px 24px rgba(80,170,255,.12);
+        0 0 20px 6px rgba(255,255,255,.35),
+        0 0 80px 24px rgba(255,255,255,.12);
       pointer-events: none;
       animation: bandPulse 4s ease-in-out infinite;
     }
@@ -433,7 +433,7 @@
     .done__band-glow {
       position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
       height: 400px;
-      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(100,200,255,.05) 0%, transparent 100%);
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,255,255,.05) 0%, transparent 100%);
       pointer-events: none;
     }
 
@@ -441,10 +441,10 @@
 
     .done__check {
       width: 48px; height: 48px;
-      border: 1px solid rgba(200,235,255,.35); border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.35); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       margin: 0 auto 28px;
-      box-shadow: 0 0 16px rgba(100,200,255,.18), 0 0 4px rgba(255,255,255,.1);
+      box-shadow: 0 0 16px rgba(255,255,255,.18), 0 0 4px rgba(255,255,255,.1);
       animation: checkBreath 4s ease-in-out infinite;
     }
 
@@ -452,7 +452,7 @@
 
     .done__label {
       font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-      color: rgba(100,200,255,.5); margin-bottom: 16px;
+      color: rgba(255,255,255,.5); margin-bottom: 16px;
     }
 
     .done__title {
@@ -510,8 +510,8 @@
 
     /* Intro pill border breath — staggered via nth-child delay */
     @keyframes pillBreath {
-      0%, 100% { border-color: rgba(100,200,255,.15); box-shadow: none; }
-      50%       { border-color: rgba(160,220,255,.35); box-shadow: 0 0 10px rgba(100,200,255,.10); }
+      0%, 100% { border-color: rgba(255,255,255,.15); box-shadow: none; }
+      50%       { border-color: rgba(255,255,255,.35); box-shadow: 0 0 10px rgba(255,255,255,.10); }
     }
 
     /* Done band luminous pulse */
@@ -522,8 +522,8 @@
 
     /* Done check ring breath */
     @keyframes checkBreath {
-      0%, 100% { box-shadow: 0 0 16px rgba(100,200,255,.18), 0 0 4px rgba(255,255,255,.10); border-color: rgba(200,235,255,.35); }
-      50%       { box-shadow: 0 0 28px rgba(100,200,255,.32), 0 0 8px rgba(255,255,255,.20); border-color: rgba(220,245,255,.55); }
+      0%, 100% { box-shadow: 0 0 16px rgba(255,255,255,.18), 0 0 4px rgba(255,255,255,.10); border-color: rgba(255,255,255,.35); }
+      50%       { box-shadow: 0 0 28px rgba(255,255,255,.32), 0 0 8px rgba(255,255,255,.20); border-color: rgba(255,255,255,.55); }
     }
 
     /* Step card left-edge glow sweep — used on ::before */
@@ -536,7 +536,7 @@
     #cursor-glow {
       position: fixed; pointer-events: none;
       width: 280px; height: 280px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(100,200,255,.04) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255,255,255,.04) 0%, transparent 70%);
       transform: translate(-50%, -50%);
       z-index: 0; transition: left .15s ease, top .15s ease;
     }
