@@ -1184,6 +1184,7 @@
     <button class="lang-btn active" data-lang="it">IT</button>
     <button class="lang-btn" data-lang="en">EN</button>
     <button class="lang-btn" data-lang="fr">FR</button>
+    <button class="lang-btn" data-lang="de">DE</button>
   </nav>
 
   <!-- ═══════════════════════════════════════════
@@ -1471,7 +1472,7 @@
         'curve.cta': 'Continua con Fidesmo →',
         'done.label': 'Completato',
         'done.title': 'Fatto.',
-        'done.sub': 'Il tuo prodotto Novalink® è pronto per supportarti<br>di tutti i giorni per tutti i&nbsp;tuoi pagamenti&nbsp;contactless.',
+        'done.sub': 'Il tuo prodotto Novalink® è pronto ad accompagnarti<br>ogni giorno per tutti i&nbsp;tuoi pagamenti&nbsp;contactless.',
       },
       en: {
         'hero.label': 'Payment activation',
@@ -1548,6 +1549,44 @@
         'done.label': 'Terminé',
         'done.title': 'Prêt.',
         'done.sub': 'Votre produit Novalink® est prêt à&nbsp;vous accompagner<br>au quotidien pour tous vos paiements sans&nbsp;contact.',
+      },
+      de: {
+        'hero.label': 'Zahlungsaktivierung',
+        'hero.title': 'Aktivieren Sie kontaktlose Zahlungen<br>mit Ihrem Novalink®-Produkt',
+        'hero.sub': 'Folgen Sie wenigen einfachen Schritten, um mit&nbsp;Ihrem Novalink®-Produkt zu&nbsp;bezahlen.<br>Wählen Sie die für&nbsp;Sie am besten geeignete Aktivierungsmethode.',
+        'path.recommended': 'Empfohlen',
+        'path.fidesmo.name': 'Aktivierung mit<br>Fidesmo',
+        'path.fidesmo.note': 'Schnell und direkt. Falls Ihre Karte nicht kompatibel ist, können Sie die&nbsp;Aktivierung über&nbsp;Curve abschließen.',
+        'path.curve.tag': 'Alternativer Weg',
+        'path.curve.name': 'Aktivierung mit<br>Curve&nbsp;+&nbsp;Fidesmo',
+        'path.curve.note': 'Um mehrere Karten zu verwalten oder wenn Ihre Karte nicht direkt mit&nbsp;Fidesmo kompatibel ist.',
+        'scroll': 'Scrollen',
+        'fidesmo.eyebrow': 'Aktivierung mit Fidesmo',
+        'fidesmo.title': 'Aktivieren Sie Ihr Novalink®-Produkt und konfigurieren Sie kontaktlose&nbsp;Zahlungen.',
+        'fidesmo.desc': 'Fidesmo ist die App, die die Aktivierung kontaktloser Zahlungen mit&nbsp;Ihrem Novalink®-Produkt ermöglicht.',
+        'steps': 'Schritte',
+        'f01.title': 'Fidesmo installieren',
+        'f01.desc': 'Laden Sie die Fidesmo-App aus dem App&nbsp;Store oder Google&nbsp;Play&nbsp;Store herunter.',
+        'f02.title': 'Ihr Novalink®-Produkt koppeln',
+        'f02.desc': 'Halten Sie in der Fidesmo-App Ihr Novalink®-Produkt an Ihr&nbsp;Smartphone, bis die Kopplung abgeschlossen&nbsp;ist.',
+        'f03.title': 'Ihre Karte hinzufügen',
+        'f03.desc': 'Folgen Sie den Anweisungen in der App, um Ihre Zahlungskarte&nbsp;hinzuzufügen.',
+        'f04.title': 'Ihr Produkt verwenden',
+        'f04.desc': 'Ihr Novalink®-Produkt ist jetzt bereit. Zum Bezahlen halten Sie das Produkt an ein&nbsp;kontaktloses&nbsp;Zahlungsterminal.',
+        'curve.eyebrow': 'Aktivierung mit Curve + Fidesmo',
+        'curve.title': 'Nur wenn Sie die&nbsp;Methode<br>Curve&nbsp;+&nbsp;Fidesmo gewählt haben',
+        'curve.desc': 'Wenn Sie mehrere Karten in einer&nbsp;einzigen App verwalten möchten oder Ihre Bank ein kompatibles Wallet erfordert, konfigurieren Sie Ihr Curve-Wallet, bevor Sie Ihr Novalink®-Produkt mit&nbsp;Fidesmo aktivieren.',
+        'curve.note': 'Curve ist nur für Einwohner des&nbsp;Vereinigten&nbsp;Königreichs und der Länder des&nbsp;Europäischen&nbsp;Wirtschaftsraums (EWR) verfügbar.',
+        'c01.title': 'Curve installieren',
+        'c01.desc': 'Laden Sie die Curve-App aus dem App&nbsp;Store oder Google&nbsp;Play&nbsp;Store herunter und installieren Sie sie auf Ihrem&nbsp;Smartphone.',
+        'c02.title': 'Ihre Karten hinzufügen',
+        'c02.desc': 'Öffnen Sie die Curve-App und folgen Sie den Schritten, um eine oder&nbsp;mehrere Zahlungskarten hinzuzufügen. Verbinden Sie sich bei Aufforderung mit&nbsp;Ihrer Bank und bestätigen Sie die&nbsp;Autorisierung.',
+        'c03.title': 'Ihre Karten überprüfen',
+        'c03.desc': 'Gehen Sie in der Curve-App zu Ihrem Profil, um zu überprüfen, ob Ihre Karten erfolgreich hinzugefügt wurden und aktiv sind. Ihr Curve-Wallet ist jetzt konfiguriert. Sie können mit&nbsp;der Aktivierung Ihres Novalink®-Produkts mit&nbsp;Fidesmo fortfahren.',
+        'curve.cta': 'Weiter mit Fidesmo →',
+        'done.label': 'Abgeschlossen',
+        'done.title': 'Fertig.',
+        'done.sub': 'Ihr Novalink®-Produkt ist bereit, Sie<br>jeden Tag bei allen Ihren kontaktlosen&nbsp;Zahlungen zu begleiten.',
       }
     };
 
@@ -1566,7 +1605,7 @@
         btn.classList.toggle('active', btn.dataset.lang === lang);
       });
       // Swap video sources per lingua (EN usa data-src-en, IT e FR usano data-src-it)
-      const srcAttr = lang === 'en' ? 'data-src-en' : 'data-src-it';
+      const srcAttr = (lang === 'en' || lang === 'de') ? 'data-src-en' : 'data-src-it';
       document.querySelectorAll('video[data-src-it]').forEach(v => {
         const newSrc = v.getAttribute(srcAttr);
         if (newSrc && v.getAttribute('src') !== newSrc) {
