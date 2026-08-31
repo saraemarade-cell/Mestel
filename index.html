@@ -1,32 +1,33 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Novalink — Mestel</title>
+  <title>Novalink — Attivazione Pagamenti | Mestel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200;0,300;0,400;0,500;1,200;1,300&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* Nasconde scrollbar su tutti gli elementi tranne html (scrollbar principale) */
+    *:not(html)::-webkit-scrollbar { display: none; }
+    *:not(html) { scrollbar-width: none; }
+
     :root {
       --black: #03080a;
       --white: #ffffff;
-      --nfc: #ffffff;
-      --nfc-soft: rgba(255,255,255,0.10);
       --grey: rgba(255,255,255,0.4);
       --font: 'Source Sans 3', sans-serif;
     }
 
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; overflow-x: hidden; overscroll-behavior: none; }
 
     body {
       font-family: var(--font);
       background: var(--black);
       color: var(--white);
       -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
     }
 
     /* ── SCROLL PROGRESS ──────────────────────── */
@@ -37,8 +38,44 @@
       width: 0%;
       background: linear-gradient(90deg, rgba(255,255,255,.8), rgba(255,255,255,1));
       box-shadow: 0 0 10px 3px rgba(255,255,255,.4), 0 0 4px 1px rgba(255,255,255,.3);
-      z-index: 100;
+      z-index: 200;
       transition: width .1s linear;
+    }
+
+    /* ── LANGUAGE SWITCHER ───────────────────── */
+    .lang-switcher {
+      position: fixed;
+      top: 20px; right: 24px;
+      z-index: 150;
+      display: flex;
+      gap: 4px;
+      background: rgba(3,8,10,.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 100px;
+      padding: 4px 6px;
+    }
+
+    .lang-btn {
+      font-family: var(--font);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 100px;
+      transition: color .25s, background .25s;
+    }
+
+    .lang-btn:hover { color: rgba(255,255,255,.7); }
+
+    .lang-btn.active {
+      color: var(--white);
+      background: rgba(255,255,255,.1);
     }
 
     /* ══════════════════════════════════════════
@@ -46,17 +83,16 @@
     ══════════════════════════════════════════ */
     .hero {
       position: relative;
-      height: 100svh;
-      min-height: 600px;
+      min-height: 100svh;
       background: var(--black);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      padding: 100px 24px 80px;
     }
 
-    /* Ambient hero background breath — continuous, seamless */
     .hero::before {
       content: '';
       position: absolute;
@@ -67,13 +103,16 @@
       z-index: 0;
     }
 
-    /* ── MESTEL LOGO ──────────────────────────── */
     .hero__logo-wrap {
       position: relative;
       z-index: 4;
-      margin-bottom: 44px;
+      margin-bottom: 56px;
       opacity: 0;
       animation: fadeIn .6s ease forwards .3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
     }
 
     #mestel-logo {
@@ -83,11 +122,127 @@
     }
 
     #mestel-logo path,
-    #mestel-logo polygon {
-      fill: #ffffff;
+    #mestel-logo polygon { fill: #ffffff; }
+
+    .hero__content {
+      position: relative;
+      z-index: 4;
+      text-align: center;
+      max-width: 640px;
+      opacity: 0;
+      animation: fadeIn .7s ease forwards .8s;
     }
 
-    /* ── SCROLL INDICATOR ─────────────────────── */
+    .hero__label {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+      margin-bottom: 20px;
+    }
+
+    .hero__title {
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -.03em;
+      margin-bottom: 20px;
+    }
+
+    .hero__sub {
+      font-size: clamp(.95rem, 2vw, 1.1rem);
+      font-weight: 400;
+      line-height: 1.7;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 40px;
+    }
+
+    /* ── PATH CHOOSER ────────────────────────── */
+    .path-chooser {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 520px) {
+      .path-chooser { flex-direction: row; }
+    }
+
+    .path-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 4px;
+      padding: 18px 22px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      background: rgba(255,255,255,.03);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--white);
+      transition: border-color .3s, background .3s, box-shadow .3s;
+      text-align: left;
+    }
+
+    .path-btn:hover {
+      border-color: rgba(255,255,255,.35);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 0 30px rgba(255,255,255,.05);
+    }
+
+    .path-btn__tag {
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+    }
+
+    .path-btn__name {
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: -.01em;
+    }
+
+    .path-btn__note {
+      font-size: .78rem;
+      font-weight: 400;
+      color: rgba(0,0,0,.75);
+      line-height: 1.5;
+    }
+
+    .path-btn__arrow {
+      margin-top: 8px;
+      font-size: 1rem;
+      color: rgba(255,255,255,.4);
+      transition: transform .25s;
+    }
+
+    .path-btn:hover .path-btn__arrow { transform: translateX(4px); }
+
+    .path-btn.recommended {
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.05);
+    }
+
+    .path-btn__badge {
+      font-size: 8px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 100px;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 4px;
+    }
+
     .hero__scroll {
       position: absolute;
       bottom: 32px;
@@ -99,14 +254,14 @@
       gap: 10px;
       z-index: 4;
       opacity: 0;
-      animation: fadeIn .8s ease forwards 3.5s;
+      animation: fadeIn .8s ease forwards 2s;
     }
 
     .hero__scroll-line {
       width: 1px; height: 36px;
       background: linear-gradient(to bottom, rgba(255,255,255,.45), transparent);
       transform-origin: top center;
-      animation: scrollPulse 2.5s ease-in-out infinite 4s;
+      animation: scrollPulse 2.5s ease-in-out infinite 2.5s;
     }
 
     .hero__scroll span {
@@ -132,64 +287,60 @@
     }
 
     /* ══════════════════════════════════════════
-       INTRO
+       SECTION HEADER
     ══════════════════════════════════════════ */
-    .intro {
-      padding: 72px 24px 56px;
+    .section-header {
       max-width: 960px;
       margin: 0 auto;
+      padding: 72px 24px 40px;
     }
 
-    .intro__grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 32px;
+    .section-header__eyebrow {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.25);
+      margin-bottom: 12px;
     }
 
-    @media (min-width: 680px) {
-      .intro__grid { grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .section-header__title {
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: -.025em;
+      margin-bottom: 14px;
     }
 
-    .intro__label {
-      font-size: 10px; font-weight: 400; letter-spacing: .2em;
-      text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: 20px;
+    .section-header__desc {
+      font-size: .95rem;
+      font-weight: 400;
+      line-height: 1.75;
+      color: rgba(255,255,255,.45);
+      max-width: 560px;
     }
 
-    .intro__title {
-      font-size: clamp(1.6rem, 4vw, 2.4rem);
-      font-weight: 200; line-height: 1.3; letter-spacing: -.02em;
+    .section-header__note {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 14px 18px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 12px;
+      background: rgba(255,255,255,.06);
+      font-size: .92rem;
+      font-weight: 400;
+      color: rgba(255,255,255,.75);
+      line-height: 1.6;
     }
-
-    .intro__body {
-      font-size: .95rem; font-weight: 300; line-height: 1.8;
-      color: rgba(255,255,255,.5); padding-top: 8px;
-    }
-
-    .intro__body strong { color: rgba(255,255,255,.85); font-weight: 400; }
-
-    .intro__pills {
-      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px;
-    }
-
-    .intro__pill {
-      font-size: 11px; font-weight: 400; letter-spacing: .08em;
-      padding: 8px 16px;
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 100px;
-      color: rgba(255,255,255,.65);
-      background: rgba(255,255,255,.04);
-      animation: pillBreath 5s ease-in-out infinite;
-    }
-    .intro__pill:nth-child(2) { animation-delay: -1.25s; }
-    .intro__pill:nth-child(3) { animation-delay: -2.5s;  }
-    .intro__pill:nth-child(4) { animation-delay: -3.75s; }
 
     /* ══════════════════════════════════════════
-       STEPS
+       STEPS LABEL
     ══════════════════════════════════════════ */
     .steps-label {
       max-width: 960px; margin: 0 auto;
-      padding: 40px 24px 24px;
+      padding: 0 24px 24px;
       display: flex; align-items: center; gap: 20px;
     }
 
@@ -200,9 +351,12 @@
 
     .steps-label-line { flex: 1; height: 1px; background: rgba(255,255,255,.08); }
 
+    /* ══════════════════════════════════════════
+       STEP CARDS
+    ══════════════════════════════════════════ */
     .step {
       max-width: 960px; margin: 0 auto;
-      padding: 0 24px 56px;
+      padding: 0 24px 48px;
       opacity: 0; transform: translateY(30px);
       transition: opacity .7s ease, transform .7s ease;
     }
@@ -223,7 +377,6 @@
       .step__inner { flex-direction: row; align-items: stretch; }
     }
 
-    /* Stagger edge glow per step so they breathe out of phase */
     .step:nth-child(odd)  .step__inner::before { animation-delay: -2.5s; }
     .step:nth-child(even) .step__inner::before { animation-delay: -1.0s; }
 
@@ -241,18 +394,16 @@
       opacity: 0; transition: opacity .5s ease;
     }
 
-    /* Visible cards animate the edge glow continuously */
     .step.visible .step__inner::before {
       animation: edgeGlow 5s ease-in-out infinite;
     }
-    /* Hover overrides with instant full opacity */
     .step__inner:hover::before { opacity: 1; animation: none; }
 
-    /* Video — colonna sinistra */
+    /* Video */
     .step__video {
       flex: 0 0 auto;
       width: 100%;
-      aspect-ratio: 9/16;
+      aspect-ratio: 4/5;
       background: #000;
       position: relative;
       overflow: hidden;
@@ -260,9 +411,9 @@
 
     @media (min-width: 700px) {
       .step__video {
-        width: 40%;
-        aspect-ratio: 9/16;
-        max-height: 540px;
+        width: 38%;
+        aspect-ratio: 4/5;
+        max-height: 520px;
       }
     }
 
@@ -283,7 +434,7 @@
       }
     }
 
-    /* Testo — colonna destra */
+    /* Testo */
     .step__text {
       padding: 28px 28px 32px;
       flex: 1;
@@ -305,17 +456,48 @@
 
     .step__title {
       font-size: clamp(1.4rem, 4vw, 2rem);
-      font-weight: 300; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 12px;
+      font-weight: 400; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 12px;
     }
 
     .step__desc {
-      font-size: .92rem; font-weight: 300; line-height: 1.75;
+      font-size: .92rem; font-weight: 400; line-height: 1.75;
       color: rgba(255,255,255,.45);
     }
 
     .step__sub {
       margin-top: 24px; padding-top: 24px;
       border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    /* ── CTA between sections ────────────────── */
+    .section-cta {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 8px 24px 72px;
+      text-align: center;
+    }
+
+    .section-cta a {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 100px;
+      font-family: var(--font);
+      font-size: .88rem;
+      font-weight: 400;
+      letter-spacing: .06em;
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      background: rgba(255,255,255,.03);
+      transition: border-color .3s, color .3s, background .3s;
+    }
+
+    .section-cta a:hover {
+      border-color: rgba(255,255,255,.4);
+      color: var(--white);
+      background: rgba(255,255,255,.06);
     }
 
     /* ══════════════════════════════════════════
@@ -379,12 +561,12 @@
 
     .done__title {
       font-size: clamp(3rem, 10vw, 7rem);
-      font-weight: 200; letter-spacing: -.03em; line-height: 1; margin-bottom: 16px;
+      font-weight: 400; letter-spacing: -.03em; line-height: 1; margin-bottom: 16px;
     }
 
     .done__sub {
-      font-size: 1rem; font-weight: 300; line-height: 1.7;
-      color: rgba(255,255,255,.4); max-width: 400px; margin: 0 auto 40px;
+      font-size: 1rem; font-weight: 400; line-height: 1.7;
+      color: rgba(255,255,255,.4); max-width: 480px; margin: 0 auto 40px;
     }
 
     .done__logo-block {
@@ -394,64 +576,34 @@
     .done__logo svg path,
     .done__logo svg polygon { fill: #ffffff !important; stroke: none !important; }
 
-    /* ══════════════════════════════════════════
-       PIN TIP
-    ══════════════════════════════════════════ */
-    .pin-tip {
-      max-width: 960px; margin: 0 auto; padding: 0 24px 80px;
-      opacity: 0; transform: translateY(30px);
-      transition: opacity .7s ease, transform .7s ease;
-    }
-
-    .pin-tip.visible { opacity: 1; transform: none; }
-
-    .pin-tip__title { font-size: 1.1rem; font-weight: 400; margin-bottom: 8px; }
-
-    .pin-tip__desc {
-      font-size: .9rem; font-weight: 300; line-height: 1.75;
-      color: rgba(255,255,255,.4);
-    }
-
     /* ── KEYFRAMES ────────────────────────────── */
     @keyframes fadeIn { to { opacity: 1; } }
 
-    /* scrollPulse: 0% and 100% identical — seamless */
     @keyframes scrollPulse {
       0%, 100% { opacity: .35; transform: scaleY(1);   }
       50%       { opacity: 1;   transform: scaleY(1.1); }
     }
 
-    /* Hero ambient radial breath — very subtle, 8 s */
     @keyframes heroBreathe {
       0%, 100% { opacity: .55; transform: scale(1);    }
       50%       { opacity: 1;   transform: scale(1.06); }
     }
 
-    /* Glow divider opacity pulse */
     @keyframes dividerPulse {
       0%, 100% { opacity: .5; }
       50%       { opacity: 1;  }
     }
 
-    /* Intro pill border breath — staggered via nth-child delay */
-    @keyframes pillBreath {
-      0%, 100% { border-color: rgba(255,255,255,.15); box-shadow: none; }
-      50%       { border-color: rgba(255,255,255,.35); box-shadow: 0 0 10px rgba(255,255,255,.10); }
-    }
-
-    /* Done band luminous pulse */
     @keyframes bandPulse {
       0%, 100% { opacity: .8;  }
       50%       { opacity: 1;   }
     }
 
-    /* Done check ring breath */
     @keyframes checkBreath {
       0%, 100% { box-shadow: 0 0 16px rgba(255,255,255,.18), 0 0 4px rgba(255,255,255,.10); border-color: rgba(255,255,255,.35); }
       50%       { box-shadow: 0 0 28px rgba(255,255,255,.32), 0 0 8px rgba(255,255,255,.20); border-color: rgba(255,255,255,.55); }
     }
 
-    /* Step card left-edge glow sweep — used on ::before */
     @keyframes edgeGlow {
       0%, 100% { opacity: 0; }
       50%       { opacity: .6; }
@@ -470,60 +622,565 @@
        MOBILE  (< 700 px)
     ══════════════════════════════════════════ */
     @media (max-width: 699px) {
-
-      /* ── Hero ── */
-      .hero__logo-wrap { margin-bottom: 28px; }
+      .hero { padding: 80px 20px 60px; }
+      .hero__logo-wrap { margin-bottom: 36px; }
       #mestel-logo { width: clamp(100px, 42vw, 150px); }
       .hero__scroll { bottom: 20px; }
+      .hero__title { font-size: clamp(1.8rem, 9vw, 3rem); }
 
-      /* ── Intro ── */
-      .intro { padding: 48px 20px 40px; }
-      .intro__title { font-size: clamp(1.6rem, 7vw, 2.4rem); }
-      .intro__pills { gap: 8px; }
-      .intro__pill { font-size: .78rem; padding: 6px 14px; }
+      .section-header { padding: 56px 20px 32px; }
+      .steps-label { padding: 0 20px; margin-bottom: 16px; }
 
-      /* ── Steps label ── */
-      .steps-label { padding: 0 20px; margin-bottom: 24px; }
-
-      /* ── Step cards: video sopra, testo sotto ── */
       .step { padding: 0 16px 40px; }
-
-      .step__inner {
-        flex-direction: column;   /* video in cima, testo in fondo */
-        border-radius: 16px;
-      }
-
-      /* Video: larghezza piena, altezza ridotta per non occupare tutto lo schermo */
-      .step__video {
-        width: 100%;
-        aspect-ratio: 9/16;
-        max-height: 60svh;        /* mai più alto del 60% dello schermo */
-      }
-
-      /* Separatore orizzontale sotto il video (invece di verticale) */
+      .step__inner { flex-direction: column; border-radius: 16px; }
+      .step__video { width: 100%; aspect-ratio: 4/5; max-height: 75svh; }
       .step__video::after {
         bottom: 0; right: 0; top: auto; left: 0;
         width: 100%; height: 1px;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,.3) 50%, transparent);
       }
-
-      /* Testo: padding più compatto */
       .step__text { padding: 20px 20px 24px; }
-
       .step__title { font-size: clamp(1.2rem, 5vw, 1.6rem); }
       .step__desc  { font-size: .88rem; }
 
-      /* ── Done section ── */
       .done { padding: 60px 20px; }
       .done__title { font-size: clamp(2.6rem, 12vw, 5rem); }
       .done__sub   { font-size: .88rem; }
       .done__logo  { width: clamp(80px, 28vw, 120px); }
 
-      /* ── Pin tip ── */
-      .pin-tip { padding: 48px 20px; }
-
-      /* Nascondi il cursore glow su touch (non serve) */
       #cursor-glow { display: none; }
+
+      .path-chooser { flex-direction: column; }
+      .lang-switcher { top: 14px; right: 14px; }
+    }
+
+    /* ══════════════════════════════════════════
+       BICOLOUR REDESIGN
+    ══════════════════════════════════════════ */
+
+    /* ── HERO: sfondo bianco ─────────────────── */
+    .hero {
+      background: #ffffff;
+      color: #03080a;
+    }
+    .hero::before {
+      background: radial-gradient(ellipse 65% 50% at 50% 58%, rgba(0,0,0,.025) 0%, transparent 70%);
+    }
+    #mestel-logo path,
+    #mestel-logo polygon { fill: #03080a; }
+    .hero__logo-wrap > span { color: rgba(0,0,0,.6) !important; }
+    .hero__label { color: rgba(0,0,0,.6); }
+    .hero__title { color: #03080a; font-weight: 700; }
+    .hero__sub { color: rgba(0,0,0,.5); }
+    .hero__scroll span { color: rgba(0,0,0,.22); }
+    .hero__scroll-line {
+      background: linear-gradient(to bottom, rgba(0,0,0,.28), transparent);
+    }
+
+    /* Path buttons: bordo nero, fill bianco */
+    .path-btn {
+      border: 1.5px solid #03080a;
+      background: #ffffff;
+      color: #03080a;
+      box-shadow: none;
+    }
+    .path-btn:hover {
+      border-color: #000;
+      background: rgba(0,0,0,.03);
+      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    }
+    .path-btn__tag  { color: rgba(0,0,0,.38); }
+    .path-btn__name { color: #03080a; font-weight: 600; }
+    .path-btn__note { color: rgba(0,0,0,.65); }
+    .path-btn__arrow { color: rgba(0,0,0,.45); }
+    .path-btn.recommended {
+      border-color: #03080a;
+      background: #ffffff;
+    }
+
+    /* Lang switcher adatto su bianco */
+    .lang-switcher {
+      background: rgba(255,255,255,.9);
+      border-color: rgba(0,0,0,.1);
+    }
+    .lang-btn { color: rgba(0,0,0,.35); }
+    .lang-btn:hover { color: rgba(0,0,0,.7); }
+    .lang-btn.active { color: #03080a; background: rgba(0,0,0,.07); }
+
+    /* ── CURVE / FIDESMO: sezione a nero — testi visibili ── */
+    #curve .section-header__eyebrow,
+    #fidesmo .section-header__eyebrow {
+      color: rgba(255,255,255,.65);
+    }
+    #curve .section-header__title,
+    #fidesmo .section-header__title {
+      color: #ffffff;
+    }
+    #curve .section-header__desc,
+    #fidesmo .section-header__desc {
+      color: rgba(255,255,255,.6);
+    }
+    #curve .steps-label span,
+    #fidesmo .steps-label span {
+      color: rgba(255,255,255,.55);
+    }
+    #curve .steps-label-line,
+    #fidesmo .steps-label-line {
+      background: rgba(255,255,255,.15);
+    }
+
+    /* UK note box: bianco visibile su nero */
+    .section-header__note {
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,.12);
+      color: rgba(0,0,0,.88);
+    }
+
+    /* ── STEPS AREA: sfondo bianco ────────────── */
+    .steps-area {
+      background: #ffffff;
+      padding-top: 16px;
+      padding-bottom: 8px;
+    }
+
+    .steps-area .step__inner {
+      background: #f4f4f4;
+      border-color: rgba(0,0,0,.07);
+      box-shadow: none;
+    }
+    .steps-area .step__inner:hover {
+      border-color: rgba(0,0,0,.16);
+      box-shadow: 0 6px 32px rgba(0,0,0,.09);
+    }
+    /* Disabilita tutti i glow bianchi sullo sfondo bianco */
+    .steps-area .step__inner::before { display: none; }
+    .steps-area .step .step__inner::after { display: none; }
+    .steps-area .step__text { background: #f4f4f4; }
+    .steps-area .step__number { color: rgba(0,0,0,.32); }
+    .steps-area .step__meta-line { background: rgba(0,0,0,.07); }
+    .steps-area .step__title { color: #03080a; font-weight: 700; }
+    .steps-area .step__desc { color: rgba(0,0,0,.55); }
+
+    /* Linea separatrice video su bianco */
+    .steps-area .step__video::after {
+      background: linear-gradient(90deg, transparent, rgba(0,0,0,.09) 50%, transparent);
+      box-shadow: none;
+    }
+    @media (min-width: 700px) {
+      .steps-area .step__video::after {
+        background: linear-gradient(to bottom, transparent, rgba(0,0,0,.09) 50%, transparent);
+      }
+    }
+
+    /* CTA "Continua con Fidesmo" su bianco */
+    .steps-area .section-cta a {
+      border-color: rgba(0,0,0,.2);
+      color: rgba(0,0,0,.65);
+      background: transparent;
+      font-weight: 600;
+    }
+    .steps-area .section-cta a:hover {
+      border-color: #000;
+      color: #000;
+      background: rgba(0,0,0,.03);
+      box-shadow: none;
+    }
+
+    /* ── TITOLI BOLD, corpo regular ───────────── */
+    .hero__title           { font-weight: 700; }
+    .section-header__title { font-weight: 700; }
+    .step__title           { font-weight: 700; }
+    .done__title           { font-weight: 700; }
+    /* CTA in bold */
+    .path-btn__name        { font-weight: 700; }
+    .section-cta a         { font-weight: 700; }
+    /* Body text tutto in regular */
+    .hero__sub             { font-weight: 400; }
+    .hero__label           { font-weight: 400; }
+    .step__desc            { font-weight: 400; }
+    .section-header__desc  { font-weight: 400; }
+    .section-header__note  { font-weight: 400; }
+    .done__sub             { font-weight: 400; }
+    .path-btn__note        { font-weight: 400; }
+
+    /* ── GLOW DIVIDER: grigi neutri (no blu) ─── */
+    .glow-divider::after {
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(130,130,130,.1) 20%,
+        rgba(160,160,160,.30) 50%,
+        rgba(130,130,130,.1) 80%,
+        transparent);
+      box-shadow: 0 0 10px 2px rgba(130,130,130,.07);
+    }
+
+    /* ── GLOW DIVIDER dopo hero: più prominente ── */
+    .hero + .glow-divider {
+      height: 2px;
+    }
+    .hero + .glow-divider::after {
+      left: 0; width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(80,80,80,.08) 10%,
+        rgba(100,100,100,.55) 35%,
+        rgba(120,120,120,.9) 50%,
+        rgba(100,100,100,.55) 65%,
+        rgba(80,80,80,.08) 90%,
+        transparent 100%);
+      box-shadow:
+        0 0 8px 3px rgba(100,100,100,.35),
+        0 0 28px 10px rgba(80,80,80,.15),
+        0 0 60px 24px rgba(60,60,60,.07);
+      animation: heroDividerPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes heroDividerPulse {
+      0%, 100% { opacity: .7; }
+      50%       { opacity: 1;  }
+    }
+
+    /* ══════════════════════════════════════════
+       BAGLIORI ANIMATI SU SFONDI NERI
+    ══════════════════════════════════════════ */
+
+    #curve .section-header,
+    #fidesmo .section-header {
+      position: relative;
+      overflow: visible;
+    }
+
+    /* Clip overflow dei glow che sconfinano */
+    #curve, #fidesmo { overflow-x: hidden; }
+
+    /* Unico glow ampio, blur forte, sconfina dai bordi */
+    #curve .section-header::before,
+    #fidesmo .section-header::before {
+      content: '';
+      position: absolute;
+      width: 180%;
+      height: 220%;
+      top: -60%;
+      left: -40%;
+      background: radial-gradient(ellipse at 50% 50%,
+        rgba(218,218,218,.22) 0%,
+        rgba(180,180,180,.07) 32%,
+        rgba(120,120,120,.01) 58%,
+        transparent 72%);
+      filter: blur(52px);
+      pointer-events: none;
+      z-index: 0;
+      animation: headerGlowDrift 14s ease-in-out infinite;
+    }
+
+    #fidesmo .section-header::before {
+      animation-delay: -7s;
+    }
+
+    @keyframes headerGlowDrift {
+      0%   { opacity: .5;  transform: scale(.90) translate(-5%, -4%); }
+      25%  { opacity: .80; transform: scale(1.05) translate( 4%,  2%); }
+      50%  { opacity: 1;   transform: scale(1.10) translate( 2%, -3%); }
+      75%  { opacity: .65; transform: scale(.96)  translate(-3%,  5%); }
+      100% { opacity: .5;  transform: scale(.90)  translate(-5%, -4%); }
+    }
+
+    /* Contenuto sopra il glow */
+    #curve .section-header > *,
+    #fidesmo .section-header > * { position: relative; z-index: 1; }
+    #curve .steps-label,
+    #fidesmo .steps-label { position: relative; z-index: 1; }
+
+    /* Glow su .done */
+    #curve, #fidesmo, .done { position: relative; }
+
+    .done::before {
+      content: '';
+      position: absolute;
+      width: 160%;
+      height: 160%;
+      top: -30%;
+      left: -30%;
+      background: radial-gradient(ellipse at 50% 45%,
+        rgba(210,210,210,.18) 0%,
+        rgba(170,170,170,.06) 35%,
+        transparent 65%);
+      filter: blur(60px);
+      animation: headerGlowDrift 16s ease-in-out infinite -5s;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .done__band-wrap,
+    .done__content { position: relative; z-index: 1; }
+
+    /* Cursor glow: grigio neutro */
+    #cursor-glow {
+      background: radial-gradient(circle, rgba(130,130,130,.04) 0%, transparent 70%);
+    }
+
+    /* Hero radial glow: nessun tono freddo */
+    @keyframes heroBreathe {
+      0%, 100% { opacity: .4; transform: scale(1); }
+      50%       { opacity: .8; transform: scale(1.05); }
+    }
+
+    @media (max-width: 699px) {
+      .steps-area { padding-top: 8px; }
+    }
+
+    /* ══════════════════════════════════════════
+       TIPOGRAFIA — SCALA DEFINITIVA
+    ══════════════════════════════════════════ */
+
+    /* text-56: hero title, done title */
+    .hero__title,
+    .done__title {
+      font-size: 56px !important;
+      font-weight: 800 !important;
+      line-height: 70px !important;
+      letter-spacing: 0.56px !important;
+    }
+
+    /* text-40: section header titles, step/card titles */
+    .section-header__title,
+    .step__title,
+    .steps-area .step__title {
+      font-size: 40px !important;
+      font-weight: 700 !important;
+      line-height: 50px !important;
+      letter-spacing: 0.4px !important;
+    }
+
+    /* text-16: body text — Regular */
+    .hero__sub,
+    .section-header__desc,
+    .step__desc,
+    .steps-area .step__desc,
+    .done__sub {
+      font-size: 16px !important;
+      font-weight: 400 !important;
+      line-height: 25px !important;
+      letter-spacing: 0.16px !important;
+    }
+
+    /* text-14 body variant: note e sottotesti — Regular */
+    .section-header__note,
+    .path-btn__note {
+      font-size: 14.08px !important;
+      font-weight: 400 !important;
+      line-height: 22px !important;
+      letter-spacing: 0.14px !important;
+    }
+
+    /* text-14 CTA variant: nomi bottoni e link azione — Bold */
+    .path-btn__name,
+    .section-cta a {
+      font-size: 14.08px !important;
+      font-weight: 700 !important;
+      line-height: 22px !important;
+      letter-spacing: 0.14px !important;
+    }
+
+    /* text-11: labels, eyebrows, step numbers — Regular, letter-spacing ampio */
+    .hero__label,
+    .section-header__eyebrow,
+    .step__number,
+    .steps-label span,
+    .done__label {
+      font-size: 11px !important;
+      font-weight: 400 !important;
+      line-height: 17.2px !important;
+      letter-spacing: 0.22em !important;
+    }
+
+    /* ── FOOTER: rimuovi fascia e glow ──────── */
+    .done__band-wrap { display: none; }
+    .done::before    { display: none; }
+
+    /* ══════════════════════════════════════════
+       COLORI PURI E PESI ≥ 400
+    ══════════════════════════════════════════ */
+
+    /* Sfondo bianco → testo #000 */
+    .hero,
+    .hero *:not(#mestel-logo):not(#mestel-logo *) { color: #000000 !important; }
+    .path-btn, .path-btn *                        { color: #000000 !important; }
+    .steps-area, .steps-area *                    { color: #000000 !important; }
+
+    /* Sfondo nero → testo #fff */
+    #curve .section-header,
+    #curve .section-header *,
+    #curve .steps-label,
+    #curve .steps-label *,
+    #fidesmo .section-header,
+    #fidesmo .section-header *,
+    #fidesmo .steps-label,
+    #fidesmo .steps-label *           { color: #ffffff !important; }
+
+    /* UK note: box bianco su nero → testo #000 (specificità alta per battere #curve .section-header *) */
+    #curve .section-header .section-header__note,
+    #curve .section-header .section-header__note *,
+    .section-header__note,
+    .section-header__note *           { color: #000000 !important; }
+
+    /* Done (sfondo nero) → #fff */
+    .done, .done *                    { color: #ffffff !important; }
+
+    /* Lang switcher (su hero bianco) → testo scuro */
+    .lang-switcher                    { background: rgba(255,255,255,.9); border-color: rgba(0,0,0,.1); }
+    .lang-btn                         { color: #000000 !important; }
+    .lang-btn.active                  { color: #000000 !important; background: rgba(0,0,0,.07); }
+
+    /* ══════════════════════════════════════════
+       TIPOGRAFIA — TEXT WRAP & NO-BREAK
+    ══════════════════════════════════════════ */
+
+    /* Mantieni parole specifiche insieme */
+    .no-break { white-space: nowrap; }
+
+    /* Titoli e testi brevi: distribuzione bilanciata */
+    .hero__title,
+    .section-header__title,
+    .step__title,
+    .done__title,
+    .hero__label,
+    .section-header__eyebrow,
+    .done__label,
+    .path-btn__name           { text-wrap: balance; }
+
+    /* Paragrafi e testi lunghi: evita righe finali orfane */
+    .hero__sub,
+    .section-header__desc,
+    .section-header__note,
+    .step__desc,
+    .done__sub,
+    .path-btn__note           { text-wrap: pretty; }
+
+    /* ══════════════════════════════════════════
+       HERO — VISIBILITÀ COMPLETA FINO A SCORRI
+    ══════════════════════════════════════════ */
+
+    /* ══════════════════════════════════════════
+       HERO — SEMPRE INTERA NELLA VIEWPORT
+       Tutto scala con svh: su schermi bassi
+       gli elementi si comprimono automaticamente.
+    ══════════════════════════════════════════ */
+
+    /* Altezza = esattamente viewport; overflow:hidden già nella base */
+    .hero {
+      height: 100svh !important;
+      min-height: 0 !important;
+      padding: clamp(40px, 6svh, 90px) 24px clamp(40px, 6svh, 72px) !important;
+    }
+
+    /* Scroll indicator rimosso */
+    .hero__scroll { display: none !important; }
+
+    /* Logo: altezza proporzionale alla viewport */
+    #mestel-logo {
+      height: clamp(40px, 9svh, 104px) !important;
+      width: auto !important;
+    }
+
+    /* Brand text "Novalink®" sotto il logo */
+    .hero__logo-wrap > span {
+      font-size: clamp(9px, 1.3svh, 11px) !important;
+    }
+
+    /* Spazio tra logo e contenuto */
+    .hero__logo-wrap {
+      margin-bottom: clamp(8px, 2.5svh, 56px) !important;
+      gap: clamp(6px, 1svh, 14px) !important;
+    }
+
+    /* Spazio sotto label */
+    .hero__label {
+      margin-bottom: clamp(6px, 1.4svh, 20px) !important;
+    }
+
+    /* Titolo: scala sia per larghezza (vw) che per altezza (svh) */
+    .hero__title {
+      font-size: clamp(22px, min(6.5vw, 6svh), 64px) !important;
+      line-height: 1.2 !important;
+      margin-bottom: clamp(6px, 1.5svh, 20px) !important;
+    }
+
+    /* Sottotitolo */
+    .hero__sub {
+      font-size: clamp(13px, min(2.1vw, 2.1svh), 18px) !important;
+      line-height: 1.5 !important;
+      margin-bottom: clamp(8px, 2svh, 40px) !important;
+    }
+
+    /* Bottoni path: padding ridotto in basso, box più grandi */
+    .path-btn {
+      padding: clamp(10px, 1.6svh, 22px) clamp(16px, 2.4vw, 28px) clamp(6px, 1svh, 14px) !important;
+      gap: clamp(2px, 0.5svh, 4px) !important;
+    }
+
+    /* Note bottoni */
+    .path-btn__note {
+      font-size: clamp(11px, 1.5svh, 14.08px) !important;
+      line-height: 1.35 !important;
+    }
+
+    /* Testo principale box */
+    .path-btn__name {
+      font-size: clamp(13px, 1.8svh, 16px) !important;
+    }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE — SPAZIATURE PER BREAKPOINT
+       Solo margini e padding, mai font-size
+    ══════════════════════════════════════════ */
+
+
+    /* ── Tablet (700 – 1024px) ──────────────── */
+    @media (min-width: 700px) and (max-width: 1024px) {
+      .section-header { padding: 56px 32px 32px; }
+      .steps-label { padding: 0 32px 20px; }
+      .step { padding: 0 20px 40px; }
+      .step__text { padding: 24px 24px 28px; }
+      .section-cta { padding: 8px 32px 60px; }
+      .done { padding: 72px 32px; }
+      .done__check { margin-bottom: 20px; }
+    }
+
+    /* A capo solo su desktop, nascosti su mobile */
+    @media (max-width: 699px) { .br-desk { display: none; } }
+
+    /* ── Mobile (< 700px) ───────────────────── */
+    @media (max-width: 699px) {
+      .section-header { padding: 48px 20px 28px; }
+      .section-header__title {
+        font-size: clamp(24px, 6.5vw, 36px) !important;
+        line-height: 1.2 !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        text-wrap: pretty !important;
+      }
+      .section-header__desc { max-width: 100%; }
+      .section-header__note {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        margin-top: 16px;
+      }
+      .steps-label { padding: 0 16px 16px; gap: 12px; }
+      .step { padding: 0 16px 36px; }
+      .step__text { padding: 18px 18px 22px; }
+      .step__meta { margin-bottom: 10px; }
+      .step__sub { margin-top: 16px; padding-top: 16px; }
+      .section-cta { padding: 4px 16px 48px; }
+      .section-cta a { padding: 11px 20px; gap: 8px; }
+      .done { padding: 48px 20px; }
+      .done__check { margin-bottom: 20px; }
+      .done__label { margin-bottom: 12px; }
+      .done__sub { margin-bottom: 28px; }
+      .path-chooser { gap: 12px; }
+      .path-btn { padding: 14px 18px; gap: 4px; }
     }
   </style>
 </head>
@@ -532,13 +1189,20 @@
   <div id="progress-band"></div>
   <div id="cursor-glow"></div>
 
+  <!-- ── LANGUAGE SWITCHER ──────────────────── -->
+  <nav class="lang-switcher" aria-label="Selezione lingua">
+    <button class="lang-btn active" data-lang="it">IT</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="fr">FR</button>
+    <button class="lang-btn" data-lang="de">DE</button>
+  </nav>
+
   <!-- ═══════════════════════════════════════════
        HERO
   ════════════════════════════════════════════ -->
   <section class="hero">
 
-    <!-- Mestel Logo — stroke draw luminoso -->
-    <div class="hero__logo-wrap" style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+    <div class="hero__logo-wrap">
       <svg id="mestel-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 293.97 153.11">
         <g>
           <polygon points="154.12 49.59 104.53 0 104.53 79.35 119.41 79.35 119.41 34.71 144.2 59.51 154.12 49.59"/>
@@ -555,167 +1219,187 @@
           <path d="M259.77,104.15h8.96v40.69h25.24v7.59h-34.21v-48.28Z"/>
         </g>
       </svg>
-      <span style="font-size:11px;font-weight:400;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.35);">Novalink</span>
+      <span style="font-size:11px;font-weight:400;letter-spacing:.32em;text-transform:uppercase;color:#000000;">Novalink®</span>
+    </div>
+
+    <div class="hero__content">
+      <p class="hero__label" data-i18n="hero.label">Attivazione pagamenti</p>
+      <h1 class="hero__title" data-i18n="hero.title">Attiva i pagamenti contactless con&nbsp;il tuo prodotto Novalink®</h1>
+      <p class="hero__sub" data-i18n="hero.sub">Segui pochi semplici passi per iniziare a pagare con il polso. Scegli il metodo di attivazione più adatto a te.</p>
+
+      <div class="path-chooser">
+        <a href="#fidesmo" class="path-btn">
+          <span class="path-btn__name" data-i18n="path.fidesmo.name">Attivazione con Fidesmo</span>
+          <span class="path-btn__note" data-i18n="path.fidesmo.note">Rapida e diretta. Se la tua carta non è compatibile, potrai procedere con Curve.</span>
+          <span class="path-btn__arrow">→</span>
+        </a>
+        <a href="#curve" class="path-btn">
+          <span class="path-btn__name" data-i18n="path.curve.name">Attivazione con Curve + Fidesmo</span>
+          <span class="path-btn__note" data-i18n="path.curve.note">Per gestire più carte o se la tua carta non è direttamente compatibile con Fidesmo.</span>
+          <span class="path-btn__arrow">→</span>
+        </a>
+      </div>
     </div>
 
     <div class="hero__scroll">
       <div class="hero__scroll-line"></div>
-      <span>Scorri</span>
+      <span data-i18n="scroll">Scorri</span>
     </div>
 
   </section>
 
-  <!-- ═══════════════════════════════════════════
-       INTRO
-  ════════════════════════════════════════════ -->
   <div class="glow-divider"></div>
 
-  <section class="intro">
-    <div class="intro__grid">
-      <div>
-        <p class="intro__label">Cos'è Novalink</p>
-        <h2 class="intro__title">Il pagamento è nel tuo polso.</h2>
-      </div>
-      <div>
-        <p class="intro__body">
-          <strong>Novalink</strong> è il bracciale Mestel che ti permette di pagare
-          contactless ovunque. L'attivazione avviene tramite <strong>Fidesmo</strong> —
-          per alcune carte potrebbe essere necessario <strong>Curve</strong> come wallet compatibile.
-        </p>
-        <div class="intro__pills">
-          <span class="intro__pill">Contactless</span>
-          <span class="intro__pill">Fidesmo</span>
-          <span class="intro__pill">Curve</span>
-          <span class="intro__pill">NFC</span>
+  <!-- ═══════════════════════════════════════════
+       SEZIONE CURVE
+  ════════════════════════════════════════════ -->
+  <section id="curve">
+
+    <div class="section-header">
+      <p class="section-header__eyebrow" data-i18n="curve.eyebrow">Attivazione con Curve + Fidesmo</p>
+      <h2 class="section-header__title" data-i18n="curve.title">Solo se hai scelto il metodo Curve + Fidesmo</h2>
+      <p class="section-header__desc" data-i18n="curve.desc">Se desideri gestire più carte di pagamento in un'unica app, o se la tua banca richiede un wallet compatibile, configura il tuo wallet Curve prima di&nbsp;attivare il prodotto Novalink® con Fidesmo.</p>
+      <span class="section-header__note" data-i18n="curve.note">Curve è disponibile per i residenti del&nbsp;Regno&nbsp;Unito e dei paesi dello&nbsp;Spazio&nbsp;Economico&nbsp;Europeo (SEE).</span>
+    </div>
+
+    <div class="steps-label">
+      <span data-i18n="steps">Passi</span>
+      <div class="steps-label-line"></div>
+      <span>01 – 03</span>
+    </div>
+
+    <div class="steps-area">
+
+    <!-- Step C01 -->
+    <article class="step">
+      <div class="step__inner">
+        <div class="step__video">
+          <video data-src-it="Videoita/SCENA6.mp4" data-src-en="Videoita/SCENA6.mp4" src="Videoita/SCENA6.mp4" controls playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:#000;"></video>
+        </div>
+        <div class="step__text">
+          <div class="step__meta"><span class="step__number">Step 01</span><div class="step__meta-line"></div></div>
+          <h2 class="step__title" data-i18n="c01.title">Installare Curve</h2>
+          <p class="step__desc" data-i18n="c01.desc">Scarica l'app Curve dall'App Store o dal Google Play Store e installala sul tuo smartphone.</p>
         </div>
       </div>
+    </article>
+
+    <!-- Step C02 -->
+    <article class="step">
+      <div class="step__inner">
+        <div class="step__video">
+          <video data-src-it="Videoita/SCENA7V2.mp4" data-src-en="Videoita/SCENA7V2.mp4" src="Videoita/SCENA7V2.mp4" controls playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:#000;"></video>
+        </div>
+        <div class="step__text">
+          <div class="step__meta"><span class="step__number">Step 02</span><div class="step__meta-line"></div></div>
+          <h2 class="step__title" data-i18n="c02.title">Aggiungere le tue carte</h2>
+          <p class="step__desc" data-i18n="c02.desc">Apri l'app Curve e segui i passaggi sullo schermo per aggiungere una o&nbsp;più carte di pagamento. Quando richiesto, connettiti alla&nbsp;tua banca e conferma l'autorizzazione.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Step C03 -->
+    <article class="step">
+      <div class="step__inner">
+        <div class="step__video">
+          <video data-src-it="Videoita/SCENA8e9V2.mp4" data-src-en="Videoita/SCENA8e9V2.mp4" src="Videoita/SCENA8e9V2.mp4" controls playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:#000;"></video>
+        </div>
+        <div class="step__text">
+          <div class="step__meta"><span class="step__number">Step 03</span><div class="step__meta-line"></div></div>
+          <h2 class="step__title" data-i18n="c03.title">Verificare le tue carte</h2>
+          <p class="step__desc" data-i18n="c03.desc">Dall'app Curve, vai al tuo profilo per verificare che le vostre carte siano state aggiunte correttamente e siano attive. Il tuo wallet Curve è ora configurato. Puoi procedere con l'attivazione del tuo prodotto Novalink® con Fidesmo.</p>
+        </div>
+      </div>
+    </article>
+
+    <div class="section-cta">
+      <a href="#fidesmo" data-i18n="curve.cta">Continua con Fidesmo →</a>
     </div>
+
+    </div><!-- /steps-area -->
+
   </section>
 
   <div class="glow-divider"></div>
 
   <!-- ═══════════════════════════════════════════
-       STEPS
+       SEZIONE FIDESMO
   ════════════════════════════════════════════ -->
-  <div class="steps-label">
-    <span>Istruzioni</span>
-    <div class="steps-label-line"></div>
-    <span>11 passi</span>
-  </div>
+  <section id="fidesmo">
 
-  <article class="step">
-    <div class="step__inner">
-      <div class="step__video">
-        <iframe src="https://drive.google.com/file/d/1Ekz6LszgXaPPZ-aRr-xq6HHtLKIY017i/preview" allow="autoplay" allowfullscreen></iframe>
-      </div>
-      <div class="step__text">
-        <div class="step__meta"><span class="step__number">Step 01</span><div class="step__meta-line"></div></div>
-        <h2 class="step__title">Scarica l'app Fidesmo</h2>
-        <p class="step__desc">Scarica l'app Fidesmo da App Store o Google Play.</p>
-      </div>
+    <div class="section-header">
+      <p class="section-header__eyebrow" data-i18n="fidesmo.eyebrow">Attivazione Fidesmo</p>
+      <h2 class="section-header__title" data-i18n="fidesmo.title">Attiva il tuo prodotto Novalink® e configura i pagamenti contactless.</h2>
+      <p class="section-header__desc" data-i18n="fidesmo.desc">Fidesmo è l'app che permette di attivare il pagamento contactless con&nbsp;il tuo prodotto Novalink®.</p>
     </div>
-  </article>
 
-  <article class="step">
-    <div class="step__inner">
-      <div class="step__video">
-        <iframe src="https://drive.google.com/file/d/1zP3navCtQlZqbRfj7pTQBQ8EUcyNsDta/preview" allow="autoplay" allowfullscreen></iframe>
-      </div>
-      <div class="step__text">
-        <div class="step__meta"><span class="step__number">Step 02</span><div class="step__meta-line"></div></div>
-        <h2 class="step__title">Associa il bracciale Novalink</h2>
-        <p class="step__desc">Apri Fidesmo e segui le istruzioni sullo schermo per associare il tuo bracciale. Potrebbero essere necessari alcuni passaggi.</p>
-      </div>
+    <div class="steps-label">
+      <span data-i18n="steps">Passi</span>
+      <div class="steps-label-line"></div>
+      <span>01 – 04</span>
     </div>
-  </article>
 
-  <article class="step">
-    <div class="step__inner">
-      <div class="step__video">
-        <iframe src="https://drive.google.com/file/d/1hmlzP4CaayJhrH9NSmN9ca55P6uJ6qsr/preview" allow="autoplay" allowfullscreen></iframe>
+    <div class="steps-area">
+
+    <!-- Step F01 -->
+    <article class="step">
+      <div class="step__inner">
+        <div class="step__video">
+          <video data-src-it="Videoita/SCENA1.mp4" data-src-en="Videoeng/SCENA1ENG.mp4" src="Videoita/SCENA1.mp4" controls playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:#000;"></video>
+        </div>
+        <div class="step__text">
+          <div class="step__meta"><span class="step__number">Step 01</span><div class="step__meta-line"></div></div>
+          <h2 class="step__title" data-i18n="f01.title">Installare Fidesmo</h2>
+          <p class="step__desc" data-i18n="f01.desc">Scarica l'app Fidesmo dall'App Store o dal Google Play Store.</p>
+        </div>
       </div>
-      <div class="step__text">
-        <div class="step__meta"><span class="step__number">Step 03</span><div class="step__meta-line"></div></div>
-        <h2 class="step__title">Completa la configurazione</h2>
-        <p class="step__desc">Segui tutte le istruzioni nell'app fino alla conferma finale.</p>
-        <div class="step__sub">
+    </article>
+
+    <!-- Step F02 -->
+    <article class="step">
+      <div class="step__inner">
+        <div class="step__video">
+          <video data-src-it="Videoita/SCENA2V5.mp4" data-src-en="Videoeng/SCENA2ENG.mp4" src="Videoita/SCENA2V5.mp4" controls playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:#000;"></video>
+        </div>
+        <div class="step__text">
+          <div class="step__meta"><span class="step__number">Step 02</span><div class="step__meta-line"></div></div>
+          <h2 class="step__title" data-i18n="f02.title">Associare il tuo prodotto Novalink®</h2>
+          <p class="step__desc" data-i18n="f02.desc">Nell'app Fidesmo, associa il tuo prodotto Novalink® avvicinandolo allo smartphone fino al&nbsp;completamento dell'abbinamento.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Step F03 -->
+    <article class="step">
+      <div class="step__inner">
+        <div class="step__video">
+          <video data-src-it="Videoita/SCENA3e4.mp4" data-src-en="Videoeng/SCENA3e4ENG.mp4" src="Videoita/SCENA3e4.mp4" controls playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:#000;"></video>
+        </div>
+        <div class="step__text">
+          <div class="step__meta"><span class="step__number">Step 03</span><div class="step__meta-line"></div></div>
+          <h2 class="step__title" data-i18n="f03.title">Aggiungere la tua carta</h2>
+          <p class="step__desc" data-i18n="f03.desc">Segui le istruzioni sullo schermo nell'app per aggiungere la tua carta di pagamento.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Step F04 -->
+    <article class="step">
+      <div class="step__inner">
+        <div class="step__video">
+          <video data-src-it="Videoita/SCENA11.mp4" data-src-en="Videoeng/SCENA11ENG.mp4" src="Videoita/SCENA11.mp4" controls playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:#000;"></video>
+        </div>
+        <div class="step__text">
           <div class="step__meta"><span class="step__number">Step 04</span><div class="step__meta-line"></div></div>
-          <h2 class="step__title">Aggiungi la tua carta</h2>
-          <p class="step__desc">Inserisci i dati della tua carta per completare l'attivazione.</p>
+          <h2 class="step__title" data-i18n="f04.title">Utilizzare il tuo prodotto</h2>
+          <p class="step__desc" data-i18n="f04.desc">Il tuo prodotto Novalink® è pronto per essere utilizzato. Per pagare, avvicina semplicemente il prodotto a un terminale di pagamento contactless.</p>
         </div>
       </div>
-    </div>
-  </article>
+    </article>
 
-  <article class="step">
-    <div class="step__inner">
-      <div class="step__video">
-        <iframe src="https://drive.google.com/file/d/1e5nqzcwlJrwt9R_fThxDVRXsHuwEkwIl/preview" allow="autoplay" allowfullscreen></iframe>
-      </div>
-      <div class="step__text">
-        <div class="step__meta"><span class="step__number">Step 05</span><div class="step__meta-line"></div></div>
-        <h2 class="step__title">Carta non riconosciuta?</h2>
-        <p class="step__desc">Alcune carte richiedono un wallet compatibile, come Curve.</p>
-      </div>
-    </div>
-  </article>
+    </div><!-- /steps-area -->
 
-  <article class="step">
-    <div class="step__inner">
-      <div class="step__video">
-        <iframe src="https://drive.google.com/file/d/1Am2b_fGGll6R-z6rHBfrIs7iJWoBprjM/preview" allow="autoplay" allowfullscreen></iframe>
-      </div>
-      <div class="step__text">
-        <div class="step__meta"><span class="step__number">Step 06</span><div class="step__meta-line"></div></div>
-        <h2 class="step__title">Scarica l'app Curve</h2>
-        <p class="step__desc">Scarica l'app Curve da App Store o Google Play e installala sul tuo dispositivo.</p>
-      </div>
-    </div>
-  </article>
-
-  <article class="step">
-    <div class="step__inner">
-      <div class="step__video">
-        <iframe src="https://drive.google.com/file/d/18k6U2yhnQss0ARw3wUcajs0dXiSVq8_R/preview" allow="autoplay" allowfullscreen></iframe>
-      </div>
-      <div class="step__text">
-        <div class="step__meta"><span class="step__number">Step 07</span><div class="step__meta-line"></div></div>
-        <h2 class="step__title">Collega la tua carta</h2>
-        <p class="step__desc">Apri Curve e segui i passaggi per aggiungere la tua carta di pagamento.</p>
-      </div>
-    </div>
-  </article>
-
-  <article class="step">
-    <div class="step__inner">
-      <div class="step__video">
-        <iframe src="https://drive.google.com/file/d/1i4FX3mq2By05tsrPlAnfgjovOqSX7uwi/preview" allow="autoplay" allowfullscreen></iframe>
-      </div>
-      <div class="step__text">
-        <div class="step__meta"><span class="step__number">Step 08</span><div class="step__meta-line"></div></div>
-        <h2 class="step__title">Vai su Profilo</h2>
-        <p class="step__desc">Dalla schermata principale di Curve, apri la sezione Profilo.</p>
-        <div class="step__sub">
-          <div class="step__meta"><span class="step__number">Step 09</span><div class="step__meta-line"></div></div>
-          <h2 class="step__title">Tieni pronti i dati della carta</h2>
-          <p class="step__desc">Ti serviranno per completare l'attivazione su Fidesmo.</p>
-        </div>
-      </div>
-    </div>
-  </article>
-
-  <article class="step">
-    <div class="step__inner">
-      <div class="step__video">
-        <iframe src="https://drive.google.com/file/d/1xGWVoXEvo-7B6iFRjJVv1KIb3dqYSM69/preview" allow="autoplay" allowfullscreen></iframe>
-      </div>
-      <div class="step__text">
-        <div class="step__meta"><span class="step__number">Step 10</span><div class="step__meta-line"></div></div>
-        <h2 class="step__title">Inserisci la carta Curve in Fidesmo</h2>
-        <p class="step__desc">Usando Curve (o il tuo Wallet), Fidesmo potrà riconoscere correttamente la carta.</p>
-      </div>
-    </div>
-  </article>
+  </section>
 
   <div class="glow-divider"></div>
 
@@ -723,19 +1407,19 @@
        DONE
   ════════════════════════════════════════════ -->
   <section class="done">
+    <div class="done__band-wrap">
+      <div class="done__band"></div>
+      <div class="done__band-glow"></div>
+    </div>
     <div class="done__content">
       <div class="done__check">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--nfc)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
       </div>
-      <p class="done__label">Step 11 — Completato</p>
-      <h2 class="done__title">Fatto.</h2>
-      <div class="done__band-wrap">
-        <div class="done__band"></div>
-        <div class="done__band-glow"></div>
-      </div>
-      <p class="done__sub">Il tuo Novalink è pronto. Avvicina il polso al POS contactless e paga.</p>
+      <p class="done__label" data-i18n="done.label">Pronto</p>
+      <h2 class="done__title" data-i18n="done.title">Fatto.</h2>
+      <p class="done__sub" data-i18n="done.sub">Il tuo prodotto Novalink® è pronto per supportarti nella vita di tutti i giorni per tutti i tuoi pagamenti contactless.</p>
       <div class="done__logo-block">
         <div class="done__logo">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 293.97 153.11">
@@ -759,16 +1443,200 @@
     </div>
   </section>
 
-  <div class="glow-divider"></div>
-
-  <section class="pin-tip">
-    <div>
-      <h3 class="pin-tip__title">Pagamenti che richiedono PIN</h3>
-      <p class="pin-tip__desc">Per i pagamenti che richiedono PIN, ordina la carta fisica Curve e utilizza il PIN associato.</p>
-    </div>
-  </section>
-
   <script>
+    // ── TRANSLATIONS ──────────────────────────
+    const i18n = {
+      it: {
+        'hero.label': 'Attivazione pagamenti',
+        'hero.title': 'Attiva i pagamenti contactless<br>con il tuo prodotto Novalink®',
+        'hero.sub': 'Segui pochi semplici passi per iniziare a&nbsp;pagare con&nbsp;il tuo prodotto Novalink®.<br>Scegli il metodo di&nbsp;attivazione più adatto&nbsp;a&nbsp;te.',
+        'path.recommended': 'Consigliato',
+        'path.fidesmo.name': 'Attivazione con<br>Fidesmo',
+        'path.fidesmo.note': 'Rapida e diretta. Se&nbsp;la tua carta non&nbsp;è compatibile, potrai procedere tramite&nbsp;Curve.',
+        'path.curve.tag': 'Percorso alternativo',
+        'path.curve.name': 'Attivazione con<br>Curve&nbsp;+&nbsp;Fidesmo',
+        'path.curve.note': 'Per gestire più carte o&nbsp;se&nbsp;la tua carta non&nbsp;è direttamente compatibile con&nbsp;Fidesmo.',
+        'scroll': 'Scorri',
+        'fidesmo.eyebrow': 'Attivazione con Fidesmo',
+        'fidesmo.title': 'Attiva il tuo prodotto Novalink® <br class="br-desk">e&nbsp;configura i&nbsp;pagamenti&nbsp;contactless.',
+        'fidesmo.desc': 'Fidesmo è l\'app che permette di attivare il&nbsp;pagamento&nbsp;contactless <br class="br-desk">con&nbsp;il tuo prodotto&nbsp;Novalink®.',
+        'steps': 'Passi',
+        'f01.title': 'Installare Fidesmo',
+        'f01.desc': 'Scarica l\'app Fidesmo dall\'App&nbsp;Store o&nbsp;dal Google&nbsp;Play&nbsp;Store.',
+        'f02.title': 'Associare il tuo prodotto&nbsp;Novalink®',
+        'f02.desc': 'Nell\'app Fidesmo, associa il&nbsp;tuo prodotto&nbsp;Novalink® avvicinandolo allo&nbsp;smartphone fino al&nbsp;completamento dell\'abbinamento.',
+        'f03.title': 'Aggiungere la tua carta',
+        'f03.desc': 'Segui le istruzioni sullo schermo nell\'app per&nbsp;aggiungere la&nbsp;tua carta di&nbsp;pagamento.',
+        'f04.title': 'Utilizzare il tuo prodotto',
+        'f04.desc': 'Il tuo prodotto&nbsp;Novalink® è pronto. Per pagare, avvicina il&nbsp;prodotto <br class="br-desk">a&nbsp;un terminale di&nbsp;pagamento&nbsp;contactless.',
+        'curve.eyebrow': 'Attivazione con Curve + Fidesmo',
+        'curve.title': 'Solo se hai scelto il&nbsp;metodo<br>Curve&nbsp;+&nbsp;Fidesmo',
+        'curve.desc': 'Se desideri gestire più carte in&nbsp;un\'unica&nbsp;app, o&nbsp;se&nbsp;la tua banca richiede un&nbsp;wallet compatibile, configura il&nbsp;tuo wallet Curve prima di&nbsp;attivare il&nbsp;prodotto&nbsp;Novalink® con&nbsp;Fidesmo.',
+        'curve.note': 'Curve è disponibile per&nbsp;i residenti del&nbsp;Regno&nbsp;Unito e&nbsp;dei paesi dello&nbsp;Spazio&nbsp;Economico&nbsp;Europeo (SEE).',
+        'c01.title': 'Installare Curve',
+        'c01.desc': 'Scarica l\'app Curve dall\'App&nbsp;Store o&nbsp;dal Google&nbsp;Play&nbsp;Store e&nbsp;installala sul&nbsp;tuo smartphone.',
+        'c02.title': 'Aggiungere le tue carte',
+        'c02.desc': 'Apri l\'app Curve e&nbsp;segui i&nbsp;passaggi per&nbsp;aggiungere una o&nbsp;più carte di&nbsp;pagamento. Quando richiesto, connettiti alla&nbsp;tua banca&nbsp;<br class="br-desk">e&nbsp;conferma l\'autorizzazione.',
+        'c03.title': 'Verificare le tue carte',
+        'c03.desc': 'Dall\'app Curve, accedi al&nbsp;tuo profilo per&nbsp;verificare che le&nbsp;tue carte siano state aggiunte correttamente e&nbsp;siano attive. Il&nbsp;tuo wallet Curve è ora configurato. Puoi procedere all\'attivazione del&nbsp;tuo prodotto&nbsp;Novalink® con&nbsp;Fidesmo.',
+        'curve.cta': 'Continua con Fidesmo →',
+        'done.label': 'Completato',
+        'done.title': 'Fatto.',
+        'done.sub': 'Il tuo prodotto Novalink® è pronto ad accompagnarti<br>ogni giorno per&nbsp;tutti i&nbsp;tuoi pagamenti&nbsp;contactless.',
+      },
+      en: {
+        'hero.label': 'Payment activation',
+        'hero.title': 'Activate contactless payments<br>with your Novalink® product',
+        'hero.sub': 'Follow a&nbsp;few simple steps to&nbsp;start paying with&nbsp;your Novalink® product.<br>Choose the&nbsp;activation method that best suits your&nbsp;needs.',
+        'path.recommended': 'Recommended',
+        'path.fidesmo.name': 'Activation with<br>Fidesmo',
+        'path.fidesmo.note': 'Quick and direct. If your card is not compatible, you can complete the&nbsp;activation via&nbsp;Curve.',
+        'path.curve.tag': 'Alternative path',
+        'path.curve.name': 'Activation with<br>Curve&nbsp;+&nbsp;Fidesmo',
+        'path.curve.note': 'To manage multiple cards or&nbsp;if your card is not directly compatible with&nbsp;Fidesmo.',
+        'scroll': 'Scroll',
+        'fidesmo.eyebrow': 'Activation with Fidesmo',
+        'fidesmo.title': 'Activate your Novalink® product and&nbsp;set up contactless&nbsp;payments.',
+        'fidesmo.desc': 'Fidesmo is the app that enables contactless&nbsp;payment activation with&nbsp;your Novalink® product.',
+        'steps': 'Steps',
+        'f01.title': 'Install Fidesmo',
+        'f01.desc': 'Download the Fidesmo app from the App&nbsp;Store or&nbsp;Google&nbsp;Play&nbsp;Store.',
+        'f02.title': 'Pair your Novalink® product',
+        'f02.desc': 'In the Fidesmo app, pair your Novalink® product by holding it&nbsp;against your&nbsp;smartphone until the&nbsp;pairing&nbsp;process is complete.',
+        'f03.title': 'Add your card',
+        'f03.desc': 'Follow the on-screen steps in the app to&nbsp;add your payment&nbsp;card.',
+        'f04.title': 'Use your product',
+        'f04.desc': 'Your Novalink® product is now ready to use. To pay, simply hold your product near a&nbsp;contactless&nbsp;payment&nbsp;terminal.',
+        'curve.eyebrow': 'Activation with Curve + Fidesmo',
+        'curve.title': 'Only if you chose<br>the Curve&nbsp;+&nbsp;Fidesmo method',
+        'curve.desc': 'If you want to manage multiple payment cards in a&nbsp;single app, or&nbsp;if your bank requires a&nbsp;compatible wallet, set up your Curve wallet before activating your Novalink® product with&nbsp;Fidesmo.',
+        'curve.note': 'Curve is only available to residents of the United&nbsp;Kingdom and the countries of the European&nbsp;Economic&nbsp;Area (EEA).',
+        'c01.title': 'Install Curve',
+        'c01.desc': 'Download the Curve app from the App&nbsp;Store or&nbsp;Google&nbsp;Play&nbsp;Store and&nbsp;install it on your&nbsp;smartphone.',
+        'c02.title': 'Add your cards',
+        'c02.desc': 'Open the Curve app and&nbsp;follow the on-screen steps to add one or&nbsp;more payment&nbsp;cards. When prompted, connect to&nbsp;your bank and&nbsp;confirm authorization.',
+        'c03.title': 'Verify your cards',
+        'c03.desc': 'From the Curve app, go to your profile to&nbsp;verify that your cards have been successfully added and&nbsp;are active. Your Curve wallet is now set up. You can proceed with&nbsp;activating your Novalink® product with&nbsp;Fidesmo.',
+        'curve.cta': 'Continue with Fidesmo →',
+        'done.label': 'Completed',
+        'done.title': 'Done.',
+        'done.sub': 'Your Novalink® product is ready to support you<br>every day for all your contactless&nbsp;payments.',
+      },
+      fr: {
+        'hero.label': 'Activation des paiements',
+        'hero.title': 'Activez les paiements sans&nbsp;contact<br>avec votre produit Novalink®',
+        'hero.sub': 'Suivez quelques étapes simples pour&nbsp;commencer à&nbsp;payer avec&nbsp;votre produit Novalink®.<br>Choisissez la&nbsp;méthode d\'activation qui vous convient le&nbsp;mieux.',
+        'path.recommended': 'Recommandé',
+        'path.fidesmo.name': 'Activation avec<br>Fidesmo',
+        'path.fidesmo.note': 'Rapide et direct. Si votre carte n\'est pas compatible, vous pourrez finaliser l\'activation via&nbsp;Curve.',
+        'path.curve.tag': 'Parcours alternatif',
+        'path.curve.name': 'Activation avec<br>Curve&nbsp;+&nbsp;Fidesmo',
+        'path.curve.note': 'Pour gérer plusieurs cartes ou&nbsp;si votre carte n\'est pas directement compatible avec&nbsp;Fidesmo.',
+        'scroll': 'Défiler',
+        'fidesmo.eyebrow': 'Activation avec Fidesmo',
+        'fidesmo.title': 'Activez votre produit Novalink® et&nbsp;configurez les paiements sans&nbsp;contact.',
+        'fidesmo.desc': 'Fidesmo est l\'application qui permet d\'activer le&nbsp;paiement sans&nbsp;contact avec votre produit Novalink®.',
+        'steps': 'Étapes',
+        'f01.title': 'Installer Fidesmo',
+        'f01.desc': 'Téléchargez l\'application Fidesmo depuis l\'App&nbsp;Store ou&nbsp;le Play&nbsp;Store. Recherchez-la sur l\'App&nbsp;Store ou&nbsp;le Play&nbsp;Store et&nbsp;installez-la sur votre&nbsp;smartphone.',
+        'f02.title': 'Associer votre produit Novalink®',
+        'f02.desc': 'Associez votre bracelet Novalink® depuis l\'application Fidesmo. Gardez le&nbsp;bracelet en&nbsp;contact avec votre téléphone pendant tout le&nbsp;processus d\'appairage.',
+        'f03.title': 'Ajouter votre carte',
+        'f03.desc': 'Terminez les étapes dans l\'application et&nbsp;ajoutez votre carte à&nbsp;Fidesmo.',
+        'f04.title': 'Utiliser votre produit',
+        'f04.desc': 'Votre bracelet Novalink® est prêt. Payez n\'importe où en&nbsp;approchant votre poignet du&nbsp;terminal de&nbsp;paiement.',
+        'curve.eyebrow': 'Activation avec Curve + Fidesmo',
+        'curve.title': 'Uniquement si vous avez choisi<br>la méthode Curve&nbsp;+&nbsp;Fidesmo',
+        'curve.desc': 'Si vous souhaitez gérer plusieurs cartes dans une&nbsp;seule application, ou&nbsp;si votre banque requiert un&nbsp;wallet compatible, configurez votre wallet Curve avant d\'activer votre produit Novalink® avec&nbsp;Fidesmo.',
+        'curve.note': 'Curve est uniquement disponible pour les résidents du&nbsp;Royaume-Uni et&nbsp;des pays de&nbsp;l\'Espace&nbsp;économique&nbsp;européen (EEE).',
+        'c01.title': 'Installer Curve',
+        'c01.desc': 'Téléchargez l\'application Curve. Recherchez-la sur l\'App&nbsp;Store ou&nbsp;le Play&nbsp;Store et&nbsp;installez-la sur votre&nbsp;smartphone.',
+        'c02.title': 'Ajouter vos cartes',
+        'c02.desc': 'Ouvrez Curve et&nbsp;saisissez toutes les informations demandées, en&nbsp;suivant les étapes à&nbsp;l\'écran. Ensuite, ajoutez votre carte de&nbsp;paiement en&nbsp;suivant les étapes à&nbsp;l\'écran. Connectez-vous à&nbsp;votre banque en&nbsp;ligne et&nbsp;finalisez l\'autorisation pour&nbsp;Curve. Une fois terminé, le&nbsp;compte sera relié.',
+        'c03.title': 'Vérifier vos cartes',
+        'c03.desc': 'Depuis l\'accueil de&nbsp;Curve, accédez à&nbsp;la section Profil pour&nbsp;consulter les informations de&nbsp;votre carte. Rouvrez Fidesmo et&nbsp;gardez à&nbsp;portée de&nbsp;main les informations de&nbsp;votre Wallet Card Curve. Elles vous seront nécessaires pour&nbsp;terminer l\'activation.',
+        'curve.cta': 'Continuer avec Fidesmo →',
+        'done.label': 'Terminé',
+        'done.title': 'Prêt.',
+        'done.sub': 'Votre produit Novalink® est prêt à&nbsp;vous accompagner<br>au quotidien pour tous vos paiements sans&nbsp;contact.',
+      },
+      de: {
+        'hero.label': 'Zahlungsaktivierung',
+        'hero.title': 'Aktivieren Sie kontaktlose Zahlungen<br>mit Ihrem Novalink®-Produkt',
+        'hero.sub': 'Folgen Sie wenigen einfachen Schritten, um mit&nbsp;Ihrem Novalink®-Produkt zu&nbsp;bezahlen.<br>Wählen Sie die für&nbsp;Sie am besten geeignete Aktivierungsmethode.',
+        'path.recommended': 'Empfohlen',
+        'path.fidesmo.name': 'Aktivierung mit<br>Fidesmo',
+        'path.fidesmo.note': 'Schnell und direkt. Falls Ihre Karte nicht kompatibel ist, können Sie die&nbsp;Aktivierung über&nbsp;Curve abschließen.',
+        'path.curve.tag': 'Alternativer Weg',
+        'path.curve.name': 'Aktivierung mit<br>Curve&nbsp;+&nbsp;Fidesmo',
+        'path.curve.note': 'Um mehrere Karten zu verwalten oder&nbsp;wenn Ihre Karte nicht direkt mit&nbsp;Fidesmo kompatibel ist.',
+        'scroll': 'Scrollen',
+        'fidesmo.eyebrow': 'Aktivierung mit Fidesmo',
+        'fidesmo.title': 'Aktivieren Sie Ihr Novalink®-Produkt und&nbsp;konfigurieren Sie kontaktlose&nbsp;Zahlungen.',
+        'fidesmo.desc': 'Fidesmo ist die App, die die Aktivierung kontaktloser Zahlungen mit&nbsp;Ihrem Novalink®-Produkt ermöglicht.',
+        'steps': 'Schritte',
+        'f01.title': 'Fidesmo installieren',
+        'f01.desc': 'Laden Sie die Fidesmo-App aus dem&nbsp;App&nbsp;Store oder Google&nbsp;Play&nbsp;Store herunter.',
+        'f02.title': 'Ihr Novalink®-Produkt koppeln',
+        'f02.desc': 'Halten Sie in&nbsp;der Fidesmo-App Ihr Novalink®-Produkt an Ihr&nbsp;Smartphone, bis&nbsp;die Kopplung abgeschlossen&nbsp;ist.',
+        'f03.title': 'Ihre Karte hinzufügen',
+        'f03.desc': 'Folgen Sie den Anweisungen in der App, um Ihre Zahlungskarte hinzuzufügen.',
+        'f04.title': 'Ihr Produkt verwenden',
+        'f04.desc': 'Ihr Novalink®-Produkt ist jetzt bereit. Zum Bezahlen halten Sie das Produkt an ein&nbsp;kontaktloses&nbsp;Zahlungsterminal.',
+        'curve.eyebrow': 'Aktivierung mit Curve + Fidesmo',
+        'curve.title': 'Nur wenn Sie die&nbsp;Methode<br>Curve&nbsp;+&nbsp;Fidesmo gewählt haben',
+        'curve.desc': 'Wenn Sie mehrere Karten in einer&nbsp;einzigen App verwalten möchten oder&nbsp;Ihre Bank ein&nbsp;kompatibles Wallet erfordert, konfigurieren Sie Ihr Curve-Wallet, bevor Sie Ihr Novalink®-Produkt mit&nbsp;Fidesmo aktivieren.',
+        'curve.note': 'Curve ist nur für Einwohner des&nbsp;Vereinigten&nbsp;Königreichs und&nbsp;der Länder des&nbsp;Europäischen&nbsp;Wirtschaftsraums (EWR) verfügbar.',
+        'c01.title': 'Curve installieren',
+        'c01.desc': 'Laden Sie die Curve-App aus dem&nbsp;App&nbsp;Store oder Google&nbsp;Play&nbsp;Store herunter und&nbsp;installieren Sie sie auf Ihrem&nbsp;Smartphone.',
+        'c02.title': 'Ihre Karten hinzufügen',
+        'c02.desc': 'Öffnen Sie die Curve-App und&nbsp;folgen Sie den Schritten, um eine oder&nbsp;mehrere Zahlungskarten hinzuzufügen. Verbinden Sie sich bei&nbsp;Aufforderung mit&nbsp;Ihrer Bank und&nbsp;bestätigen Sie die&nbsp;Autorisierung.',
+        'c03.title': 'Ihre Karten überprüfen',
+        'c03.desc': 'Gehen Sie in&nbsp;der Curve-App zu Ihrem Profil, um zu überprüfen, ob Ihre Karten erfolgreich hinzugefügt wurden und&nbsp;aktiv sind. Ihr Curve-Wallet ist jetzt konfiguriert. Sie können mit&nbsp;der Aktivierung Ihres Novalink®-Produkts mit&nbsp;Fidesmo fortfahren.',
+        'curve.cta': 'Weiter mit Fidesmo →',
+        'done.label': 'Abgeschlossen',
+        'done.title': 'Fertig.',
+        'done.sub': 'Ihr Novalink®-Produkt ist bereit, Sie<br>jeden Tag bei&nbsp;allen Ihren kontaktlosen&nbsp;Zahlungen zu&nbsp;begleiten.',
+      }
+    };
+
+    let currentLang = 'it';
+
+    function applyLang(lang) {
+      currentLang = lang;
+      const t = i18n[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.innerHTML = t[key];
+      });
+      document.documentElement.lang = lang;
+      document.body.setAttribute('data-lang', lang);
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      // Swap video sources per lingua (EN usa data-src-en, IT e FR usano data-src-it)
+      const srcAttr = (lang === 'en' || lang === 'de') ? 'data-src-en' : 'data-src-it';
+      document.querySelectorAll('video[data-src-it]').forEach(v => {
+        const newSrc = v.getAttribute(srcAttr);
+        if (newSrc && v.getAttribute('src') !== newSrc) {
+          v.src = newSrc;
+          v.load();
+        }
+      });
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+    });
+    applyLang(currentLang);
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+
     // ── SCROLL PROGRESS ───────────────────────
     const band = document.getElementById('progress-band');
     window.addEventListener('scroll', () => {
@@ -780,7 +1648,7 @@
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
     }, { threshold: 0.06 });
-    document.querySelectorAll('.step, .done, .pin-tip').forEach(el => obs.observe(el));
+    document.querySelectorAll('.step, .done').forEach(el => obs.observe(el));
 
     // ── CURSOR GLOW ───────────────────────────
     const glow = document.getElementById('cursor-glow');
@@ -788,8 +1656,6 @@
       glow.style.left = e.clientX + 'px';
       glow.style.top  = e.clientY + 'px';
     }, { passive: true });
-
-
   </script>
 
 </body>

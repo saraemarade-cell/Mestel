@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Novalink",
+      "runtimeExecutable": "powershell.exe",
+      "runtimeArgs": ["-Command", "& { $l = [System.Net.HttpListener]::new(); $l.Prefixes.Add('http://localhost:3000/'); $l.Start(); Write-Host 'Listening on http://localhost:3000'; while ($l.IsListening) { $ctx = $l.GetContext(); $req = $ctx.Request; $res = $ctx.Response; $path = $req.Url.LocalPath; if ($path -eq '/') { $path = '/index.html' }; $file = Join-Path 'C:\\Users\\sara_\\OneDrive\\Desktop\\Lavoro\\Mestel' $path.TrimStart('/'); if (Test-Path $file) { $bytes = [System.IO.File]::ReadAllBytes($file); $res.ContentLength64 = $bytes.Length; if ($file -match '\\.html$') { $res.ContentType = 'text/html; charset=utf-8' } elseif ($file -match '\\.css$') { $res.ContentType = 'text/css' } elseif ($file -match '\\.js$') { $res.ContentType = 'application/javascript' }; $res.OutputStream.Write($bytes, 0, $bytes.Length) } else { $res.StatusCode = 404 }; $res.Close() } }"],
+      "port": 3000
+    }
+  ]
+}
